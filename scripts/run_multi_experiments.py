@@ -36,6 +36,7 @@ from cassotis_optimization.multiobjective.planejamento import epsilon_grid, weig
 ROOT = Path(__file__).resolve().parents[1]
 METHODS = ("weighted_sum", "epsilon_restricted")
 PROJECTIONS = (("f1", "f2"), ("f1", "f3"), ("f2", "f3"))
+INSTANCE_FILES = ("minerals.csv", "groups.csv", "piles.csv")
 CSV_FIELDS = (
     "run_id", "phase", "method", "configuration", "seed", "original_feasible",
     "scalar_feasible", "f1", "f2", "f3", "norm_f1", "norm_f2", "norm_f3",
@@ -65,6 +66,25 @@ def signature(payload: dict) -> str:
     return hashlib.sha256(
         json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
     ).hexdigest()
+
+
+def file_fingerprints(directory: Path, paths: tuple[str, ...]) -> dict[str, str]:
+    """Identifica conteúdo textual, sem depender do caminho ou de CRLF/LF."""
+    return {
+        name: hashlib.sha256(
+            (directory / name).read_text(encoding="utf-8").encode("utf-8")
+        ).hexdigest()
+        for name in sorted(paths)
+    }
+
+
+def source_fingerprints(root: Path) -> dict[str, str]:
+    """Assina o executor e o núcleo Python usado na geração dos resultados."""
+    package = root / "src" / "cassotis_optimization"
+    paths = ["scripts/run_multi_experiments.py"] + [
+        path.relative_to(root).as_posix() for path in package.rglob("*.py")
+    ]
+    return file_fingerprints(root, tuple(paths))
 
 
 def configurations(protocol: dict, methods: tuple[str, ...]) -> list[tuple[str, str, dict]]:
@@ -264,6 +284,8 @@ def main() -> None:
     instance = load_instance(args.instance)
     bounds = load_bounds(ROOT / protocol["reference_file"])
     version = git_version()
+    instance_files = file_fingerprints(args.instance, INSTANCE_FILES)
+    code_files = source_fingerprints(ROOT)
     run_dir = out / "runs"
     run_dir.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -283,12 +305,18 @@ def main() -> None:
             weights=weights,
             epsilon_limits=epsilons,
         )
-        config_hash = signature({"config": asdict(config), "instance": str(args.instance.resolve()), "phase": args.phase, "protocol": protocol})
+        config_hash = signature({"signature_version": 2, "config": asdict(config),
+                                 "instance_files": instance_files, "code_files": code_files,
+                                 "phase": args.phase, "protocol": protocol})
         record_path = run_dir / f"{run_id}.json"
         if record_path.exists():
             record = json.loads(record_path.read_text(encoding="utf-8"))
             if record["config_hash"] != config_hash:
-                raise ValueError(f"Config divergente no arquivo existente: {record_path}")
+                raise ValueError(
+                    f"Assinatura divergente no arquivo existente: {record_path}. "
+                    "Resultados legados usam outra assinatura; preserve-os e use --out "
+                    "para uma pasta nova. Não misture código, instância ou protocolos distintos."
+                )
             print(f"[{index}/{len(jobs)}] retomando {run_id}", flush=True)
         else:
             result = run_gvns(instance, config)
@@ -326,6 +354,7 @@ def main() -> None:
     write_json(out / "manifest.json", {
         "phase": args.phase, "protocol_path": str(protocol_path), "protocol": protocol,
         "instance": str(args.instance.resolve()), "git_version": version,
+        "signature_version": 2, "instance_files": instance_files, "code_files": code_files,
         "planned_runs": planned, "selected_runs": len(jobs), "complete": complete,
         "analysis": analysis,
     })

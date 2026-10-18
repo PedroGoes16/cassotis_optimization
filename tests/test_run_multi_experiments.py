@@ -39,3 +39,29 @@ def test_pareto_collapses_duplicate_objective_values_preserving_origins():
 def test_signature_changes_with_config():
     assert MODULE.signature({"seed": 4001}) == MODULE.signature({"seed": 4001})
     assert MODULE.signature({"seed": 4001}) != MODULE.signature({"seed": 4002})
+
+
+def test_file_fingerprints_are_portable_and_detect_changes(tmp_path):
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    first.mkdir()
+    second.mkdir()
+    (first / "minerals.csv").write_bytes(b"name,value\nM1,2\n")
+    (second / "minerals.csv").write_bytes(b"name,value\r\nM1,2\r\n")
+    names = ("minerals.csv",)
+    assert MODULE.file_fingerprints(first, names) == MODULE.file_fingerprints(second, names)
+    (second / "minerals.csv").write_bytes(b"name,value\nM1,3\n")
+    assert MODULE.file_fingerprints(first, names) != MODULE.file_fingerprints(second, names)
+
+
+def test_source_fingerprints_detect_source_change(tmp_path):
+    script = tmp_path / "scripts" / "run_multi_experiments.py"
+    module = tmp_path / "src" / "cassotis_optimization" / "module.py"
+    script.parent.mkdir(parents=True)
+    module.parent.mkdir(parents=True)
+    script.write_text("print('run')\n", encoding="utf-8")
+    module.write_text("VALUE = 1\n", encoding="utf-8")
+    before = MODULE.source_fingerprints(tmp_path)
+    module.write_text("VALUE = 2\n", encoding="utf-8")
+    after = MODULE.source_fingerprints(tmp_path)
+    assert before != after

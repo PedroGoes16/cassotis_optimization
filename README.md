@@ -6,7 +6,9 @@ O objetivo é desenvolver, documentar e avaliar uma solução baseada em VNS/GVN
 
 ## Estado atual
 
-Entrega 1 (mono-objetivo): formulação, representação, heurística construtiva, vizinhanças N1/N2/N3, perturbações P1/P2/P3, tratamento de inviabilidade, GVNS e script de experimentos implementados. Os resultados finais ainda não foram gerados: faltam calibrar os parâmetros experimentais, congelar a configuração e escolher as seeds finais (D017).
+Entrega 1: formulação, GVNS, calibração e 15 execuções finais implementadas e registradas em `results/mono_final/`. O relatório em `report/main.tex` é cumulativo e inclui também a Entrega 2.
+
+Entrega 2: normalização, Soma Ponderada, ε-restrito, filtro de Pareto e executor implementados. A rodada oficial em `results/multi_final/` reúne 160 execuções: 16 configurações por método, cinco seeds por configuração, 200.000 avaliações por execução. O protocolo foi congelado antes da rodada (D021). As frentes são aproximações e não certificados de ótimo global.
 
 Consolidados:
 
@@ -24,11 +26,11 @@ Consolidados:
 - parada por número de avaliações (D010);
 - separação entre seeds de calibração e seeds finais (D017).
 
-Ainda experimentais: orçamento (200 mil avaliações), tamanho da amostra de N2/N3 (500), tamanhos de P1/P2/P3 e as seeds finais.
+Configuração final: orçamento de 200 mil avaliações, amostra 250, SHAKE 3/4/5; seeds 2016–2020 na Entrega 1 e 2021–2025 na Entrega 2.
 
 As decisões da GVNS estão explicadas em linguagem direta em [`docs/gvns_decisoes.md`](docs/gvns_decisoes.md). O registro formal está em [`docs/decision_log.md`](docs/decision_log.md).
 
-Pendentes: resultados finais da Entrega 1, Entrega 2 (multiobjetivo), Entrega 3 (decisão multicritério e Streamlit), relatório e apresentações.
+Pendentes: revisão e submissão da Entrega 2; métodos de decisão multicritério, atributo adicional, Streamlit e relatório final da Entrega 3. Não há apresentação oral na Entrega 2.
 
 ## Fonte do problema
 
@@ -60,9 +62,12 @@ Há também uma clarificação da professora sobre disponibilidade: os limites m
 │       ├── vizinhancas.py        # N1, N2, N3 (enumeração e amostragem uniforme)
 │       ├── perturbacoes.py       # P1, P2, P3 (SHAKE)
 │       └── gvns.py               # GVNS + VND
+│   └── multiobjective/           # normalização, escalarizações, grades e Pareto
 ├── scripts/
 │   ├── validate_instance.py
-│   └── run_mono_experiments.py   # 5 execuções × f1/f2/f3, tabelas e figuras
+│   ├── run_mono_experiments.py   # 5 execuções × f1/f2/f3, tabelas e figuras
+│   ├── run_multi_experiments.py  # protocolo multiobjetivo e figuras
+│   └── validate_multi_results.py # auditoria dos resultados multiobjetivo
 ├── tests/
 ├── app/                          # Streamlit (Entrega 3)
 ├── notebooks/
@@ -104,7 +109,7 @@ pytest
 python scripts/run_mono_experiments.py --seeds S1 S2 S3 S4 S5
 ```
 
-As seeds são obrigatórias. As seeds finais serão registradas em D017 antes da rodada oficial. Para um teste rápido:
+As seeds são obrigatórias. As seeds finais da Entrega 1, registradas em D017 antes da rodada oficial, foram 2016–2020. Para um teste rápido:
 
 ```bash
 python scripts/run_mono_experiments.py --seeds 1 2 --budget 5000 --out results/teste
@@ -118,6 +123,14 @@ O script gera, na pasta de saída (padrão `results/mono/`):
 - a figura da melhor solução de cada objetivo.
 
 Parâmetros: `--seeds`, `--budget`, `--objectives`, `--out`.
+
+## Experimentos da Entrega 2
+
+Consulte [`docs/entrega2_experimentos.md`](docs/entrega2_experimentos.md) para instalação, testes, protocolo, artefatos e comandos. Para reproduzir sem modificar os resultados históricos, indique uma pasta nova, por exemplo `--phase final --out results/multi_repro`. A assinatura dos resultados antigos era baseada no caminho absoluto; o executor atual não os migra nem os sobrescreve automaticamente.
+
+## Relatório cumulativo
+
+O código-fonte é `report/main.tex` e o PDF compilado é `report/main.pdf`. Para compilar novamente, instale uma distribuição TeX com os pacotes usados pelo documento e execute, dentro de `report/`, `tectonic main.tex` ou `pdflatex main.tex` duas vezes. As figuras mono-objetivo estão em `report/figures/`; as multiobjetivo são lidas de `results/multi_final/`, portanto mantenha essa estrutura de pastas.
 
 ## Regra de desenvolvimento
 

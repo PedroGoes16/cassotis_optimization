@@ -315,7 +315,7 @@ P1 e P2 podem alterar o consumo global de minérios e, consequentemente, gerar v
 
 ## D018 — Normalização dos objetivos para a Entrega 2
 
-**Status:** CONFIRMADA
+**Status:** CONSOLIDADA
 
 **Decisão:** utilizar normalização min–max com referências fixas
 obtidas das melhores soluções factíveis mono-objetivo da Entrega 1:
@@ -354,8 +354,7 @@ permitindo comparações consistentes entre as abordagens escalares.
 `multiobjective/multiobjective.py` e
 `multiobjective/normalizacao.py`.
 
-**Validação:** testes em `tests/test_normalizacao.py`.
-Promover a CONSOLIDADA após execução bem-sucedida dos testes.
+**Validação:** testes em `tests/test_normalizacao.py` executados com sucesso na suíte do projeto; referências e resultados oficiais da Entrega 2 estão registrados em `results/multi_final/`.
 
 ---
 
@@ -422,8 +421,7 @@ inalteradas. A escolha dos pesos é fixa durante cada execução.
 
 **Validação da integração:** `tests/test_multiobjective_gvns.py`.
 
-**Grade experimental de pesos:** será registrada em D021.
-A grade proposta ainda precisa ser validada.
+**Grade experimental de pesos:** registrada e consolidada em D021 após o piloto.
 
 ---
 
@@ -490,7 +488,7 @@ a factibilidade original e o atendimento aos limites epsilon.
 - O tratamento de inviabilidade preserva o princípio D007.
 - A soma das violações normalizadas é uma escolha heurística,
   não uma garantia de encontrar uma solução factível.
-- Os valores experimentais de epsilon serão definidos em D021.
+- Os valores experimentais de epsilon foram definidos e consolidados em D021.
 
 **Implementação:** `multiobjective/multiobjective.py`
 e `multiobjective/epsilon_restrito.py`.
@@ -531,7 +529,7 @@ em `algorithms/gvns.py`.
 
 **Status:** CONSOLIDADA
 
-**Decisão proposta:** comparar as abordagens Soma Ponderada e
+**Decisão:** comparar as abordagens Soma Ponderada e
 epsilon-restrito com 16 configurações escalares cada, utilizando
 cinco sementes por configuração na etapa oficial.
 
@@ -585,7 +583,7 @@ problemas de cobertura do espaço de objetivos.
 A grade poderá ser revista nesta fase, desde que as alterações
 sejam justificadas e registradas antes das execuções oficiais.
 
-### Execução oficial proposta
+### Execução oficial
 
 - Seeds: 2021, 2022, 2023, 2024 e 2025.
 - Orçamento: 200.000 avaliações por execução.
@@ -676,12 +674,14 @@ de produzir os resultados oficiais.
 **Evidências:** results/multi_pilot,
 results/multi_smoke100k e results/multi_smoke200k.
 
+**Resultado oficial:** `results/multi_final/` registra 160 execuções, 80 por método e cinco por configuração, todas reportadas factíveis. A execução usou o código `d5e0d94`; as frentes individuais contêm 45 e 49 vetores distintos. Esses resultados não implicam otimalidade global.
+
 
 ---
 
 ## D022 — Executor multiobjetivo, reprodutibilidade e filtro de Pareto
 
-**Status:** CONFIRMADA (pendente validação integral da execução no repositório)
+**Status:** CONFIRMADA (execução histórica conferida; validação contínua por testes)
 
 **Decisão:** executar cada configuração de pesos e limites ε com todas as seeds definidas na D021, armazenando um JSON por execução, um CSV agregado, a análise de factibilidade e os vetores não dominados por abordagem.
 
@@ -704,5 +704,7 @@ results/multi_smoke100k e results/multi_smoke200k.
 
 **Consequências:** a execução completa gera muitos arquivos, mas permite auditoria/reprodução. As projeções 2D podem conter pontos que seriam dominados naquele par isoladamente, pois o filtro correto foi calculado em 3D.
 
-**Validação:** `tests/test_pareto_multiobjetivo.py`, `tests/test_planejamento_multiobjetivo.py`, `tests/test_multiobjective_gvns.py` e execução exploratória da D021.
+**Validação:** `tests/test_pareto_multiobjetivo.py`, `tests/test_planejamento_multiobjetivo.py`, `tests/test_multiobjective_gvns.py`, execução exploratória da D021 e `scripts/validate_multi_results.py`. Este último recalcula as 160 composições e confere os escalares, a factibilidade, as estatísticas e as três frentes salvas, sem substituir os resultados originais.
+
+**Atualização de reprodutibilidade:** os arquivos históricos assinavam o caminho absoluto da instância e não podem ser retomados automaticamente em outro diretório. Para novas execuções, a assinatura versão 2 utiliza o conteúdo normalizado dos três CSVs da instância, do executor e do núcleo Python, além da configuração, referências e protocolo. Alternativas consideradas: manter o caminho absoluto; aceitar registros legados sem identificar seu conteúdo; ou migrar os registros históricos. A assinatura por conteúdo permite retomar em outro diretório e detecta alterações relevantes, sem confiar silenciosamente em registros antigos. Como consequência, os resultados legados são preservados e devem ser consultados como históricos; novas rodadas usam uma pasta de saída distinta. A assinatura não fixa a versão do Python nem das dependências. A rodada oficial não foi refeita por essa alteração.
 

@@ -1,6 +1,6 @@
 # Protocolo experimental
 
-Este documento separa requisitos do enunciado de decisões experimentais ainda pendentes.
+Este documento separa requisitos do enunciado de decisões experimentais do grupo. O registro formal das decisões e da evidência é `docs/decision_log.md`.
 
 ## Entrega 1 — requisitos já definidos
 
@@ -33,20 +33,20 @@ f3
 total_violation
 ```
 
-As seeds das execuções finais serão fixadas antes da produção dos resultados reportados.
+As seeds das execuções finais foram fixadas antes da produção dos resultados reportados.
 
 Calibração de parâmetros deve ser separada do conjunto de execuções finais.
 
 ## Decisões da Entrega 1
 
-- critério de parada: número de avaliações, sem critério auxiliar (D010); valor padrão 200.000, ainda experimental;
+- critério de parada: 200.000 avaliações, sem critério auxiliar (D010);
 - política de inviabilidade: regra de viabilidade (D007);
-- parâmetros da GVNS: D014–D016; tamanho da amostra e tamanhos de P1/P2/P3 ainda experimentais;
+- parâmetros da GVNS: amostra 250 e P1/P2/P3 = 3/4/5 (D014–D016);
 - curva de convergência: registrada a cada melhoria da melhor solução encontrada;
-- seeds: calibração e resultados finais com conjuntos disjuntos; as 5 seeds finais serão registradas em D017 depois de congelar a configuração e antes da rodada oficial;
-- resultados finais: em commit/PR separado da implementação.
+- seeds: calibração e resultados finais com conjuntos disjuntos; seeds oficiais 2016–2020 (D017);
+- resultados finais: `results/mono_final/`, incorporados separadamente da implementação.
 
-Ordem prevista: calibrar → congelar → registrar seeds → executar → commit de resultados.
+Ordem cumprida: calibrar → congelar → registrar seeds → executar → commit de resultados.
 
 Execução: `python scripts/run_mono_experiments.py --seeds S1 S2 S3 S4 S5`.
 
@@ -60,7 +60,7 @@ Tempo de execução deve ser mantido como informação complementar.
 
 A normalização dos objetivos deverá usar referências obtidas na Entrega 1, conforme exigido no enunciado.
 
-O protocolo específico de pesos, valores de epsilon e geração das soluções não dominadas será definido somente depois de consolidar os resultados mono-objetivo.
+O protocolo D021 está consolidado em `data/protocolo_entrega2.json`: 16 configurações por método, cinco seeds oficiais (2021–2025), 200.000 avaliações e filtragem de dominância em três objetivos antes das projeções. A execução oficial e a análise estão em `results/multi_final/`. A grade é uma decisão do grupo, não uma quantidade exigida pelo enunciado.
 
 ## Entrega 3
 

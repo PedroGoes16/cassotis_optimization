@@ -23,6 +23,8 @@
 \usepackage{microtype}
 \usepackage{caption}
 \usepackage{subcaption}
+\renewcommand{\dbltopfraction}{0.85}
+\renewcommand{\textfraction}{0.08}
 
 \hypersetup{
     colorlinks=true,
@@ -42,17 +44,17 @@
 }
 
 \title{\LARGE \textbf{Otimização do Custo e da Qualidade de Pilhas de Minério por GVNS}\\[0.3em]
-\large Entrega 1 -- Versões Mono-objetivo}
+\large Entrega 2 -- Versões Mono-objetivo e Multiobjetivo}
 \author{\textbf{Universidade Federal de Minas Gerais -- Teoria da Decisão -- 2026/2}\\[0.2em]
-\small Diogo Muzzi, Pedro Vieira, Allan Melquíades, Gabriel Ramos, Vitor Hugo Lacerda Lana}
-\date{27 de Setembro, 2026}
+\small Allan Melquíades, Diogo Muzzi, Gabriel Ramos, Pedro Goes, Pedro Vieira, Vitor Hugo Lacerda Lana}
+\date{18 de outubro de 2026}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-\noindent Este trabalho apresenta a formulação, implementação e avaliação experimental de uma metaheurística \textit{General Variable Neighborhood Search} (GVNS) para o planejamento de dez pilhas de minério destinadas a dois equipamentos de sinterização. A decisão é expressa em números inteiros de caminhões de 2 kt, com restrições de massa, elegibilidade, disponibilidade global e qualidade química. Três problemas mono-objetivo são resolvidos separadamente: minimização do custo total, do desvio quadrático de $\text{SiO}_2$ e do desvio quadrático de $\text{Al}_2\text{O}_3$. A solução computacional utiliza vetores de caminhões por pilha, heurística construtiva determinística, regra de viabilidade para tratamento de soluções inviáveis, \textit{Variable Neighborhood Descent} (VND) com três vizinhanças e três estruturas específicas de perturbação no SHAKE. Os parâmetros foram definidos por calibração em etapas e congelados antes das execuções finais. Com 200.000 avaliações por execução e cinco execuções estocásticas por objetivo, todas as 15 execuções finais terminaram factíveis. Os melhores valores encontrados foram R\$ 59,70 milhões para custo, 2,37303 para o desvio de $\text{SiO}_2$ e 1,42076 para o desvio de $\text{Al}_2\text{O}_3$. Os resultados evidenciam estabilidade da busca e conflito entre custo e qualidade, fornecendo as referências mono-objetivo necessárias à etapa multiobjetivo subsequente.
+\noindent Este trabalho apresenta uma metaheurística \textit{General Variable Neighborhood Search} (GVNS) para compor dez pilhas de minério, com restrições de massa, elegibilidade, disponibilidade global e qualidade química. As versões mono-objetivo minimizam separadamente custo e desvios quadráticos de $\text{SiO}_2$ e $\text{Al}_2\text{O}_3$. Suas melhores soluções factíveis fornecem referências para normalizar os objetivos antes de aplicar Soma Ponderada e $\varepsilon$-restrito. Na etapa multiobjetivo, foram avaliadas 16 configurações por abordagem, cinco sementes por configuração e 200.000 avaliações por execução. As 160 execuções oficiais terminaram factíveis em seus respectivos problemas escalares. As aproximações não dominadas contêm 45 vetores distintos para Soma Ponderada e 49 para $\varepsilon$-restrito. Os resultados mostram compromissos entre custo e qualidade, cobertura distinta entre as grades e variação entre sementes; não há certificado de otimalidade global.
 
 \vspace{0.3em}
 \noindent\textbf{Palavras-chave} -- GVNS; VND; otimização combinatória; mistura de minérios; restrições; metaheurísticas.
@@ -63,6 +65,8 @@
 O problema estudado consiste em definir a composição de dez pilhas de minério, cinco destinadas ao Sinter 1 e cinco ao Sinter 2, respeitando massas fixas, restrições logísticas e faixas de qualidade. Cada caminhão transporta 2 kt, e as disponibilidades mínima e máxima de cada minério são globais, isto é, contabilizadas sobre as dez pilhas. O caso possui três objetivos conflitantes: custo total, afastamento de $\text{SiO}_2$ em relação ao alvo e afastamento de $\text{Al}_2\text{O}_3$ em relação ao alvo \cite{case_enunciado}.
 
 A Entrega 1 exige a solução separada das três versões mono-objetivo por um método estocástico baseado em VNS/GVNS, cinco execuções por objetivo, estatísticas de mínimo, desvio-padrão e máximo, curvas de convergência e representação da melhor solução. Além do desempenho final, o enunciado requer que decisões não especificadas -- terceira vizinhança, perturbação, tratamento de inviabilidade, organização da busca local, aceitação e parada -- sejam explicitadas e justificadas \cite{case_enunciado}.
+
+Na Entrega 2, os objetivos são normalizados a partir das execuções mono-objetivo e tratados conjuntamente por Soma Ponderada e $\varepsilon$-restrito.
 
 O desenvolvimento foi conduzido incrementalmente. Primeiro foram consolidadas a formulação e a representação; em seguida, as vizinhanças e o tratamento de inviabilidade; por fim, a GVNS, os testes, a calibração e as execuções finais. O código e os resultados são versionados no repositório do projeto \cite{repo_projeto}.
 
@@ -141,7 +145,7 @@ A heurística construtiva segue a sugestão do enunciado (D013). Primeiro satisf
 
 \section{Tratamento de inviabilidade}
 
-Foi adotada uma regra de viabilidade em vez de penalização com coeficiente $\lambda$, reparo ou rejeição pura (D007). A comparação entre duas soluções segue três regras: (i) factível vence inviável; (ii) entre factíveis, vence o menor objetivo; (iii) entre inviáveis, vence a menor violação normalizada, usando o objetivo apenas como desempate.
+Uma solução é factível quando atende a todas as restrições; caso contrário, é inviável. Foi adotada uma regra de viabilidade em vez de penalização com coeficiente $\lambda$, reparo ou rejeição pura (D007). A comparação entre duas soluções segue três regras: (i) factível vence inviável; (ii) entre factíveis, vence o menor objetivo; (iii) entre inviáveis, vence a menor violação normalizada, usando o objetivo apenas como desempate.
 
 Para uma propriedade química $q$ com limites $L$ e $U$, a violação normalizada é proporcional à distância para a faixa admissível e nula dentro dela. Para disponibilidade, usa-se a violação do intervalo global normalizada por $\max(1, d_i^{\max})$. A medida agregada é
 \begin{equation}
@@ -154,29 +158,33 @@ Essa regra foi escolhida por funcionar a partir de uma solução inicial inviáv
 
 \subsection{Estruturas de vizinhança}
 
-A busca local utiliza três vizinhanças complementares:
+A busca local procura soluções melhores por meio de alterações na solução atual. Cada alteração é um movimento e produz uma solução candidata; uma vizinhança é o conjunto de movimentos possíveis de um mesmo tipo. São utilizadas três vizinhanças complementares:
 
 \noindent\textbf{$N_1$ -- substituição.} Um minério presente em uma pilha é substituído por outro minério elegível. A massa e a elegibilidade são preservadas; o consumo global e as três funções podem mudar.
 
 \noindent\textbf{$N_2$ -- troca.} Dois minérios de pilhas diferentes são permutados, desde que a elegibilidade cruzada seja satisfeita. A composição global é preservada; portanto, $f_1$ é invariável em $N_2$. Essa propriedade explica a ausência de melhorias $N_2$ nas execuções de custo após a factibilidade.
 
-\noindent\textbf{$N_3$ -- realocação com substituição em cadeia.} Para duas pilhas $p_a$ e $p_b$, com minérios $m_x$ e $m_y$, escolhe-se um novo minério $m_z$ e aplica-se
+\noindent\textbf{$N_3$ -- realocação em cadeia.} Um movimento completo é identificado por $(p_a,p_b,m_x,m_y,m_z)$: $p_a$ e $p_b$ são pilhas diferentes; $m_x$ está em $p_a$ e $m_y$ está em $p_b$; $m_z$ é o novo minério escolhido para $p_a$. O movimento substitui um caminhão de cada pilha:
 \begin{equation}
 p_a : m_x \to m_z, \quad p_b : m_y \to m_x.
 \end{equation}
-Os três minérios são distintos e as elegibilidades são verificadas. O uso de $m_x$ permanece constante, $m_y$ diminui uma unidade e $m_z$ aumenta uma unidade. A variação de custo é $\Delta f_1 = 2000(c_z - c_y)$. O movimento é atômico: embora possa ser decomposto em substituições, não depende da aceitação dos estados intermediários.
+Os três minérios são distintos; $m_z$ deve ser elegível para o grupo de $p_a$ e $m_x$ para o grupo de $p_b$. As duas substituições formam um único movimento: a solução candidata é avaliada após ambas, sem exigir que a solução intermediária seja aceita. O uso de $m_x$ permanece constante, o de $m_y$ diminui um caminhão e o de $m_z$ aumenta um caminhão. A variação de custo é $\Delta f_1 = 2000(c_z - c_y)$.
 
 Os movimentos locais são definidos sobre minérios distintos, e não sobre posições equivalentes contendo o mesmo minério. Isso remove vizinhos duplicados sem alterar o conjunto de soluções alcançáveis.
 
 \subsection{VND e amostragem}
 
-A busca local é de primeira melhoria (D014). A VND percorre $N_1 \to N_2 \to N_3$ e retorna a $N_1$ sempre que encontra melhoria. $N_1$ é enumerada integralmente, enquanto $N_2$ e $N_3$ utilizam uma amostra uniforme de 250 movimentos distintos por passada, sem reposição. Para $N_3$, a amostragem é feita por prefixos ponderados pelo número de valores possíveis de $m_z$, o que mantém probabilidade igual por movimento sem enumerar aproximadamente $10^5$ vizinhos.
+A busca local usa primeira melhoria (D014): examina os movimentos em ordem aleatória, aceita o primeiro que melhora a solução segundo a regra de viabilidade e repete a busca na mesma vizinhança. Quando uma passada não encontra melhoria, a VND passa à próxima vizinhança, na ordem $N_1 \to N_2 \to N_3$; se a busca em uma vizinhança melhorou a solução, a VND retorna a $N_1$. $N_1$ é enumerada integralmente. Em $N_2$ e $N_3$, cada passada usa uma amostra uniforme de até 250 movimentos distintos, sem reposição; se houver menos movimentos, todos são incluídos na lista em ordem aleatória.
+
+Em $N_3$, um \emph{prefixo} é a parte fixa $(p_a,p_b,m_x,m_y)$ do movimento: somente $m_z$ falta ser escolhido. Por exemplo, suponha o prefixo $(P1,P3,M2,M8)$ e os candidatos $m_z \in \{M4,M7,M10,M12\}$. Ele representa quatro movimentos, como $(P1,P3,M2,M8,M4)$: neste caso, $M2$ é substituído por $M4$ em $P1$, e $M8$ por $M2$ em $P3$. Cada um dos outros três valores de $m_z$ completa um movimento diferente. O peso desse prefixo é 4, isto é, o número de candidatos a $m_z$. O exemplo ilustra a composição do movimento; a viabilidade completa da solução ainda é verificada na avaliação.
+
+Para sortear um movimento, o algoritmo escolhe um prefixo com probabilidade proporcional ao seu peso e, depois, sorteia uniformemente um dos seus candidatos a $m_z$. Se um prefixo tem $n$ candidatos e o total de movimentos possíveis é $T$, a probabilidade de cada movimento desse prefixo é $(n/T)(1/n)=1/T$. Assim, todos os movimentos completos têm a mesma chance em cada sorteio. Se um movimento já escolhido for sorteado novamente, ele é descartado e outro é sorteado, até completar a amostra de movimentos distintos. Esse agrupamento evita listar todos os movimentos completos no caso amostrado, embora armazene os prefixos e seus candidatos.
 
 Uma passagem sem melhoria em $N_1$ caracteriza ótimo local de $N_1$. Em $N_2$ e $N_3$, como há amostragem, significa apenas que a amostra daquela passagem não encontrou melhoria.
 
 \subsection{Perturbação SHAKE}
 
-Separou-se explicitamente intensificação e diversificação (D015). As vizinhanças $N_1$--$N_3$ pertencem à VND; o SHAKE utiliza estruturas próprias com intensidade crescente:
+A VND intensifica a busca por melhorias na região da solução atual. O SHAKE promove diversificação: altera a solução para tentar explorar outra região, antes de executar uma nova VND (D015). Ele utiliza estruturas próprias com intensidade crescente:
 \begin{itemize}
     \item $P_1$: substituição aleatória de 3 posições por minérios elegíveis;
     \item $P_2$: cadeia de ejeção envolvendo 4 pilhas distintas;
@@ -324,7 +332,7 @@ A primeira solução factível foi encontrada, em média, após 395 avaliações
     \label{fig:curvas_convergencia}
 \end{figure*}
 
-\begin{figure*}[bp]
+\begin{figure*}[tp]
     \centering
     \begin{subfigure}[b]{0.32\textwidth}
         \includegraphics[width=\textwidth]{figures/best_solution_f1.png}
@@ -365,7 +373,7 @@ $f_3$ & 2018 & 65,82 & 6,3396 & 1,4208 & 386 \\
 
 A melhor solução de custo exige apenas R\$ 0,36 milhão a mais que a construtiva inicial barata e inviável, um acréscimo de aproximadamente 0,61\% para satisfazer todas as restrições. Entretanto, ela opera várias pilhas próximas aos limites superiores de qualidade: em Sinter 1, $\text{SiO}_2$ varia aproximadamente de 6,14\% a 6,20\%, e em Sinter 2 de 6,34\% a 6,49\%. Esse comportamento é coerente: em uma execução de $f_1$, aproximar-se do alvo químico não produz benefício adicional desde que as faixas admissíveis sejam respeitadas.
 
-A otimização de $f_2$ reduziu o desvio de $\text{SiO}_2$ em aproximadamente 63,5\% em relação à melhor solução de custo, mas elevou o custo em 6,26\%. A otimização de $f_3$ reduziu o desvio de $\text{Al}_2\text{O}_3$ em aproximadamente 78,3\% e elevou o custo em 10,25\%. Esses números evidenciam o conflito que será tratado explicitamente na etapa multiobjetivo.
+A otimização de $f_2$ reduziu o desvio de $\text{SiO}_2$ em aproximadamente 63,5\% em relação à melhor solução de custo, mas elevou o custo em 6,26\%. A otimização de $f_3$ reduziu o desvio de $\text{Al}_2\text{O}_3$ em aproximadamente 78,3\% e elevou o custo em 10,25\%. Esses números evidenciam o conflito tratado na etapa multiobjetivo.
 
 Mesmo nas execuções dedicadas a $f_2$ e $f_3$, os alvos não foram atingidos exatamente em todas as pilhas. Esse resultado não representa violação: alvo é um ponto desejado, enquanto os limites definem factibilidade. A composição é discreta, as disponibilidades são globais e a elegibilidade acopla as pilhas. Não foi produzida prova de ótimo global; portanto, os valores devem ser interpretados como os melhores encontrados pelo procedimento sob o orçamento fixado.
 
@@ -375,27 +383,101 @@ As estatísticas internas permitem interpretar a função de cada operador. Em m
 
 O baixo número de melhorias diretas de $N_3$ não implica inutilidade: ela amplia a topologia da busca local por um movimento coordenado que altera distribuição e composição global em um único passo. Além disso, a diversificação principal é realizada pelas estruturas $P_1$--$P_3$, separadas das vizinhanças locais. Em média, os níveis $P_1/P_2/P_3$ foram acionados 19,2/14,0/10,0 vezes em $f_1$, 12,2/9,6/7,8 em $f_2$ e 9,8/7,0/6,2 em $f_3$, mostrando que a busca alcançou repetidamente os níveis mais fortes quando perturbações menores não foram suficientes.
 
+\section{Formulações multiobjetivo e normalização}
+
+O conjunto de soluções admissíveis $\mathcal{X}$ é definido pelas restrições de massa, elegibilidade, disponibilidade global e qualidade da Seção de formulação. Para combinar objetivos de unidades distintas, utilizam-se as três melhores soluções factíveis das execuções mono-objetivo, uma por função, como âncoras (D018). Para cada objetivo $j$, seja $z_j^*$ o menor valor observado nas três âncoras e $z_j^{ref}$ o maior valor nessas mesmas soluções. A transformação, com referências fixas, é
+\begin{equation}
+\hat f_j(X) = \frac{f_j(X)-z_j^*}{z_j^{ref}-z_j^*}.
+\end{equation}
+Na ordem custo, sílica e alumina, os vetores utilizados são $z^*=(59.700.000; 2{,}37302543; 1{,}42076221)$ e $z^{ref}=(65.820.000; 6{,}49771170; 6{,}53750738)$, em que o custo está em reais. A execução usa a precisão original armazenada em \texttt{data/referencias\_multiobjetivo.json}; os números acima estão arredondados. Esses pontos são referências empíricas, não certificados de ideal ou nadir globais. Não se aplica truncamento: valores normalizados podem ficar abaixo de zero ou acima de um.
+
+Na Soma Ponderada (D019), cada vetor fixo $w$ define
+\begin{equation}
+\min_{X\in\mathcal{X}} \sum_{j=1}^{3} w_j\hat f_j(X),
+\quad w_j\geq 0,\quad \sum_{j=1}^{3}w_j=1.
+\end{equation}
+Pesos nulos permitem investigar extremos e compromissos entre dois objetivos. Por isso, e porque a busca é heurística, as soluções são submetidas posteriormente ao filtro de dominância em três objetivos. A soma ponderada não garante recuperar regiões não convexas da fronteira.
+
+No $\varepsilon$-restrito (D020), adota-se custo normalizado como objetivo principal e impõem-se limites aos desvios químicos:
+\begin{align}
+\min_{X\in\mathcal{X}}\quad &\hat f_1(X),\\
+\text{sujeito a}\quad &\hat f_2(X)\leq\varepsilon_2,\quad
+\hat f_3(X)\leq\varepsilon_3.
+\end{align}
+A GVNS é reutilizada nas duas abordagens. No problema $\varepsilon$-restrito, a factibilidade exige simultaneamente as restrições originais e os dois limites adicionais. Para ordenar soluções inviáveis, a violação da D007 recebe os termos $\max(0,\hat f_2-\varepsilon_2)$ e $\max(0,\hat f_3-\varepsilon_3)$. Essa soma é uma escolha heurística; falhar em encontrar uma solução factível não prova que ela não exista.
+
+\section{Experimentos multiobjetivo}
+
+O planejamento foi congelado após um piloto com seeds 4001 e 4002 (D021). A Soma Ponderada usa os 15 vetores da malha $w_j=k_j/4$, com $k_j$ inteiros não negativos e $\sum k_j=4$, acrescidos de $(1/3,1/3,1/3)$. A malha inclui extremos, combinações intermediárias e prioridades iguais. Para $\varepsilon$-restrito, o produto cartesiano de $\varepsilon_2,\varepsilon_3\in\{0{,}25;0{,}50;0{,}75;1{,}00\}$ produz 16 pares em níveis progressivamente mais restritivos. Essas escolhas são do grupo, não quantidades impostas pelo enunciado.
+
+Cada uma das 32 configurações usou as seeds 2021--2025, 200.000 avaliações, amostra 250 e SHAKE 3/4/5: são 160 execuções e 32 milhões de avaliações. Os parâmetros iguais controlam o esforço, mas não o tempo de parede. No piloto, 27 das 32 execuções de cada abordagem melhoraram seu objetivo escalar entre 100.000 e 200.000 avaliações (D021). A rodada oficial está em \texttt{results/multi\_final}, com código \texttt{d5e0d94}.
+
+Para cada abordagem, reuniram-se as melhores soluções finais das 16 configurações e cinco seeds. Após excluir eventual resultado não factível para seu problema escalar, aplicou-se dominância aos três objetivos originais: um vetor domina outro se não for pior em nenhum objetivo e for estritamente melhor em pelo menos um. Só então foram produzidas as projeções bidimensionais. Assim, um ponto pode parecer dominado em uma projeção e ainda ser não dominado em três dimensões. Valores repetidos são agrupados nas figuras, preservando-se as origens nos arquivos CSV; não se afirma que a frente estimada é a fronteira global.
+
+\section{Resultados e compromissos multiobjetivo}
+
+As 80 execuções de cada abordagem terminaram factíveis tanto para as restrições originais quanto para o problema escalar. Após o filtro, há 45 vetores distintos na Soma Ponderada e 49 no $\varepsilon$-restrito. A frente conjunta das 160 soluções finais contém 91 vetores distintos: 44 originados da Soma Ponderada e 47 do $\varepsilon$-restrito. Essa contagem descreve apenas as soluções coletadas, não prova superioridade de um método nem mede toda a fronteira.
+
+\begin{table}[H]
+\centering
+\caption{Intervalos observados nas frentes não dominadas por abordagem. Custo em milhões de reais. Os extremos de colunas distintas não necessariamente pertencem à mesma solução.}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+\textbf{Abordagem} & \textbf{Custo} & $\boldsymbol{f_2}$ & $\boldsymbol{f_3}$ \\
+\midrule
+Soma Ponderada & 59,68--65,82 & 2,3728--6,9396 & 1,4215--6,6346 \\
+$\varepsilon$-restrito & 59,86--63,74 & 3,3672--6,4940 & 2,6698--6,1604 \\
+\bottomrule
+\end{tabular}%
+}
+\label{tab:intervalos_multi}
+\end{table}
+
+A solução de menor custo da Soma Ponderada custa R\$ 59,68 milhões, com $f_2=6{,}8857$ e $f_3=6{,}6346$. Na mesma frente, a solução de menor $f_2$ custa R\$ 63,44 milhões, com $f_2=2{,}3728$ e $f_3=3{,}6458$: frente à solução barata, eleva o custo em 6,30\% e reduz o desvio de sílica em 65,54\%. A solução de menor $f_3$ custa R\$ 65,82 milhões e tem $f_3=1{,}4215$, redução de 78,57\% em alumina com acréscimo de custo de 10,29\%. Essas comparações são entre soluções específicas, não garantias de compromisso ótimo global.
+
+Na grade testada, a Soma Ponderada alcançou extremos químicos mais baixos que o $\varepsilon$-restrito. A comparação é limitada pela escolha dos parâmetros: a menor folga testada foi $0{,}25$ para cada desvio, não zero. Por exemplo, a melhor sílica da frente $\varepsilon$ foi $f_2=3{,}3672$, a custo de R\$ 62,46 milhões; sua melhor alumina foi $f_3=2{,}6698$, a custo de R\$ 63,20 milhões. Logo, diferenças de cobertura refletem tanto a formulação como as grades escolhidas e o comportamento heurístico; não estabelecem uma superioridade geral.
+
+\subsection{Variabilidade entre execuções}
+
+As cinco seeds contribuem para cada frente estimada. Na ordem 2021--2025, suas contribuições são 7, 11, 8, 10 e 9 vetores distintos na Soma Ponderada e 8, 11, 10, 10 e 10 no $\varepsilon$-restrito; um vetor gerado por mais de uma seed conta para cada uma de suas origens. As projeções mostram pontos de sementes distintas em regiões próximas, mas também dispersão e regiões com contribuições desiguais. As contagens consideram somente os sobreviventes do filtro e, por si, não medem estabilidade de todas as execuções.
+
+Como medida complementar, calculou-se o desvio-padrão amostral entre as cinco seeds dentro de cada configuração, seguido da mediana desses 16 desvios-padrão por método. Para custo, obtiveram-se R\$ 44,5 mil na Soma Ponderada e R\$ 91,0 mil no $\varepsilon$-restrito; para $f_2$, 0,0188 e 0,0204; para $f_3$, 0,1025 e 0,0261, respectivamente. A dispersão depende da configuração e os métodos percorrem regiões diferentes; essas medianas não devem ser interpretadas como teste estatístico ou classificação geral de estabilidade. Os valores por configuração estão em \texttt{results/multi\_final/stats\_by\_configuration.csv}; as projeções, na Fig.~\ref{fig:multi_projecoes}.
+
 \section{Reprodutibilidade}
 
-A execução final é reproduzida pelo comando abaixo a partir de uma versão limpa do código:
+A execução final mono-objetivo pode ser reproduzida em uma pasta nova, sem sobrescrever a rodada histórica:
+\begin{minipage}{\columnwidth}
 \begin{lstlisting}[language=bash]
-python3 scripts/run_mono_experiments.py \
-  --seeds 2016 2017 2018 2019 2020 \
-  --budget 200000 \
-  --sample-size 250 \
-  --p1-positions 3 \
-  --p2-chain-length 4 \
-  --p3-piles 5 \
-  --out results/mono_final
+python scripts/run_mono_experiments.py \
+  --seeds 2016 2017 2018 2019 2020 --budget 200000 \
+  --sample-size 250 --p1-positions 3 \
+  --p2-chain-length 4 --p3-piles 5 \
+  --out results/mono_repro
 \end{lstlisting}
+\end{minipage}
 
-Cada arquivo JSON registra commit, instância, objetivo, seed, parâmetros, orçamento, tempo, viabilidade, composição e histórico best-so-far. O desvio-padrão apresentado é amostral ($n-1$). A separação entre seeds de calibração e seeds finais foi definida antes da rodada oficial.
+Os arquivos JSON registram código, instância, parâmetros, seed, resultados, viabilidade, tempo, composição e histórico. O desvio-padrão é amostral ($n-1$).
+
+Entrega 2: protocolo em \texttt{docs/entrega2\_experimentos.md} e instância em \texttt{data/example\_instance}. As assinaturas históricas dependem do caminho absoluto; as atuais usam o conteúdo da instância e do código. Novas rodadas devem usar outra pasta; os registros antigos não são migrados.
 
 \section{Conclusões}
 
-Foi desenvolvida uma GVNS completa e reproduzível para as três versões mono-objetivo do problema de composição de pilhas. A representação por caminhões eliminou inviabilidades de massa e integralidade; elegibilidade foi preservada nos operadores; disponibilidade e qualidade foram tratadas por uma regra de viabilidade sem parâmetro de penalização. A VND combinou $N_1$ completa com $N_2/N_3$ amostradas, enquanto $P_1$--$P_3$ forneceram níveis independentes de perturbação.
+A GVNS preserva massa e elegibilidade por representação e operadores, tratando disponibilidade e qualidade pela regra de viabilidade. A calibração consolidou amostra 250, SHAKE 3/4/5 e 200.000 avaliações; as 15 execuções mono-objetivo foram factíveis. Na etapa multiobjetivo, ambas as abordagens produziram soluções factíveis em todas as configurações e seeds. As frentes aproximadas evidenciam compromissos entre custo e qualidade e cobertura condicionada às grades escolhidas. A escolha entre alternativas permanece para a Entrega 3.
 
-A calibração em etapas permitiu consolidar uma configuração única para os três objetivos: amostra 250, SHAKE 3/4/5 e orçamento de 200.000 avaliações. Todas as 15 execuções finais foram factíveis, com baixa dispersão entre seeds. Os resultados mostram que soluções de menor custo tendem a operar mais próximas das fronteiras de qualidade, enquanto reduções de desvio químico requerem custos maiores. Essa evidência é o principal insumo para a Entrega 2, na qual os três objetivos serão tratados conjuntamente por técnicas multiobjetivo e normalização baseada nas referências mono-objetivo obtidas aqui.
+\begin{figure*}[tp]
+\centering
+\begin{subfigure}[b]{0.44\textwidth}\includegraphics[width=\textwidth]{../results/multi_final/pareto_weighted_sum_f1_f2.png}\caption{Soma Ponderada: $f_1$ e $f_2$.}\end{subfigure}\hfill
+\begin{subfigure}[b]{0.44\textwidth}\includegraphics[width=\textwidth]{../results/multi_final/pareto_epsilon_restricted_f1_f2.png}\caption{$\varepsilon$-restrito: $f_1$ e $f_2$.}\end{subfigure}
+\par\smallskip
+\begin{subfigure}[b]{0.44\textwidth}\includegraphics[width=\textwidth]{../results/multi_final/pareto_weighted_sum_f1_f3.png}\caption{Soma Ponderada: $f_1$ e $f_3$.}\end{subfigure}\hfill
+\begin{subfigure}[b]{0.44\textwidth}\includegraphics[width=\textwidth]{../results/multi_final/pareto_epsilon_restricted_f1_f3.png}\caption{$\varepsilon$-restrito: $f_1$ e $f_3$.}\end{subfigure}
+\par\smallskip
+\begin{subfigure}[b]{0.44\textwidth}\includegraphics[width=\textwidth]{../results/multi_final/pareto_weighted_sum_f2_f3.png}\caption{Soma Ponderada: $f_2$ e $f_3$.}\end{subfigure}\hfill
+\begin{subfigure}[b]{0.44\textwidth}\includegraphics[width=\textwidth]{../results/multi_final/pareto_epsilon_restricted_f2_f3.png}\caption{$\varepsilon$-restrito: $f_2$ e $f_3$.}\end{subfigure}
+\caption{Projeções das frentes não dominadas em três objetivos. As cores identificam a seed; losangos pretos, quando presentes, identificam vetores associados a múltiplas seeds.}
+\label{fig:multi_projecoes}
+\end{figure*}
 
 {\small
 \begin{thebibliography}{9}

@@ -5,22 +5,26 @@ Esta rotina executa a grade registrada em `data/protocolo_entrega2.json`, preser
 ## Como executar (raiz do repositório)
 
 ```bash
-python -m pip install -e .
+python -m pip install -e ".[dev]"
 python -m pytest -q
+python scripts/validate_multi_results.py
 python scripts/run_multi_experiments.py --phase pilot --dry-run
-python scripts/run_multi_experiments.py --phase pilot --max-runs 2 --budget 3000 --out results/multi_smoke
-python scripts/run_multi_experiments.py --phase pilot
+python scripts/run_multi_experiments.py --phase pilot --max-runs 2 --budget 3000 --out results/multi_novo_smoke
 ```
 
-Os resultados do piloto ficam em `results/multi_pilot/`; o script retoma execuções anteriores pelo `config_hash` e rejeita resultados existentes de configurações diferentes. O processo pode ser interrompido e repetido sem perder os arquivos por seed já gravados.
+Os resultados históricos do piloto estão em `results/multi_pilot/`. Para novas rodadas, o script retoma execuções pelo `config_hash` versão 2 e rejeita diferenças de configuração, conteúdo da instância ou código. A assinatura normaliza CRLF/LF e não depende do caminho absoluto, mas não registra versões do Python nem das bibliotecas. O processo pode ser interrompido e retomado na mesma pasta com os mesmos conteúdos.
 
-**Antes da fase oficial:** inspecionar `analysis.json`, `summary.csv` e as figuras; documentar problemas e eventuais ajustes na D021; alterar `status` do protocolo para `CONGELADO` em novo commit. Somente então executar:
+**Estado histórico:** o piloto foi analisado, a D021 foi consolidada e o protocolo congelado antes da execução oficial. Os 160 resultados gerados com o código `d5e0d94` estão em `results/multi_final/` e devem ser preservados. Para reproduzir uma nova rodada com a versão atual, use uma pasta nova:
 
 ```bash
-python scripts/run_multi_experiments.py --phase final
+python scripts/run_multi_experiments.py --phase final --out results/multi_repro
 ```
 
 O executor **não permite** reduzir o orçamento ou executar somente parte da grade na fase oficial. O mesmo protocolo fixa seeds 2021–2025 e 200.000 avaliações, totalizando 160 execuções GVNS, desde que ambas as abordagens estejam selecionadas.
+
+**Compatibilidade:** os registros oficiais antigos usam uma assinatura diferente, que incluía o caminho absoluto da instância. Eles não são migrados nem retomados pelo executor atual, mesmo que os dados sejam iguais. A mensagem de assinatura divergente protege os arquivos existentes; não os apague ou sobrescreva para fazer a reprodução. Uma nova rodada pode diferir em versão de código registrada e em tempos de execução. Para reproduzir o ambiente histórico com máxima fidelidade, utilize o commit original e registre também as versões de Python e bibliotecas.
+
+O validador é somente leitura: recalcula objetivos e factibilidade a partir de cada composição, verifica a normalização, os escalares e o atendimento a ε, confronta as estatísticas por configuração e refaz os filtros de Pareto. A conferência não é uma nova rodada da GVNS nem prova de ótimo global.
 
 ## Artefatos
 
@@ -29,7 +33,7 @@ O executor **não permite** reduzir o orçamento ou executar somente parte da gr
 - `pareto_weighted_sum.csv`, `pareto_epsilon_restricted.csv`: vetores não dominados em **três** objetivos originais, com a procedência das seeds/configurações.
 - `pareto_<metodo>_f1_f2.png`, `..._f1_f3.png`, `..._f2_f3.png`: seis projeções bidimensionais dos pontos filtrados em 3D.
 - `analysis.json`: cobertura de factibilidade por configuração, número de soluções e pontos não dominados.
-- `manifest.json`: protocolo, localização da instância, versão e integridade dos resultados.
+- `manifest.json`: protocolo, localização da instância e versão do código; novas rodadas também incluem hashes dos arquivos da instância e do código.
 
 Para o ε-restrito, `scalar_feasible` inclui a factibilidade original **e** os limites ε; `original_feasible` verifica somente as restrições físicas e químicas. Não considerar soluções apenas originalmente factíveis como resultados da abordagem ε.
 

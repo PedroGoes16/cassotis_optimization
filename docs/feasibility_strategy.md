@@ -8,7 +8,7 @@ A representação proposta elimina ou reduz algumas classes de inviabilidade:
 - integralidade: preservada porque cada posição é um caminhão;
 - elegibilidade: preservada pelos operadores sempre que aplicável.
 
-A decisão pendente se concentra em:
+A decisão de tratamento foi consolidada em D007 e se concentra em:
 
 - limites de SiO2;
 - limites de Al2O3;
@@ -56,7 +56,7 @@ V(X)=
 \sum_i v_i^{disp}.
 \]
 
-Essa fórmula ainda não está congelada. Seu papel atual é permitir comparação coerente entre soluções inviáveis.
+Essa fórmula foi consolidada na D007 para comparar soluções inviáveis. A extensão para os limites adicionais de ε está registrada na D020.
 
 ## Rejeição
 
@@ -120,9 +120,9 @@ Fase 2: otimizar \(f_j\) mantendo factibilidade.
 
 Essa estratégia separa claramente os problemas de encontrar uma solução possível e encontrar uma solução boa.
 
-## Experimento para escolha
+## Nota histórica: experimento inicialmente proposto
 
-Antes de consolidar D007, comparar pelo menos duas políticas sob o mesmo orçamento e mesmas seeds.
+Antes da consolidação, foi proposta a comparação de pelo menos duas políticas sob o mesmo orçamento e mesmas seeds. Essa comparação não foi realizada; a escolha registrada na D007 se apoia nas razões ali documentadas, não em superioridade experimental demonstrada.
 
 Registrar:
 
@@ -133,4 +133,4 @@ Registrar:
 - tempo de execução;
 - sensibilidade a parâmetros adicionais.
 
-A política final deve ser escolhida e justificada com base nesses resultados e na simplicidade/reutilização para as entregas seguintes.
+Para o estado e a evidência efetivos da decisão, prevalece a D007 no registro formal.

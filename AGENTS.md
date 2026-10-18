@@ -80,14 +80,18 @@ Consolidadas na Entrega 1 (ver D007–D017):
 - SHAKE com estruturas próprias P1 (pequena), P2 (cadeia), P3 (permutação em 5 pilhas do grupo);
 - aceitação: melhoria estrita;
 - parada: número de avaliações;
-- separação entre seeds de calibração e seeds finais.
+- separação entre seeds de calibração e seeds finais;
+- orçamento 200.000, amostra 250, SHAKE 3/4/5 e seeds finais 2016–2020.
+
+Na Entrega 2 (ver D018–D022):
+
+- normalização por referências mono-objetivo fixas; Soma Ponderada e ε-restrito;
+- D021 consolidada: 16 configurações por abordagem, seeds 2021–2025 e 200.000 avaliações por execução;
+- as 160 execuções oficiais estão em `results/multi_final/`; preservar os resultados legados.
 
 Pendente:
 
-- valores experimentais: orçamento (padrão 200.000), tamanho da amostra (padrão 500), tamanhos de P1/P2/P3 (padrões 2, 3, 5);
-- seeds finais da Entrega 1, a registrar em D017 antes da rodada oficial;
-- resultados finais da Entrega 1, em commit/PR separado;
-- parâmetros e protocolo da Entrega 2 (pesos, valores de ε, normalização);
+- revisão e entrega do relatório cumulativo e dos códigos da Entrega 2;
 - métodos multicritério e atributo adicional da Entrega 3.
 
 Antes de recomendar qualquer uma dessas escolhas, consultar `docs/feasibility_strategy.md` e `docs/decision_log.md`.
@@ -103,5 +107,7 @@ Antes de recomendar qualquer uma dessas escolhas, consultar `docs/feasibility_st
 - `algorithms/gvns.py`: GVNS com VND e contagem de avaliações;
 - `feasibility.py`: violação normalizada e regra de viabilidade;
 - `visualization.py`: figuras de convergência e de solução.
+- `multiobjective/`: normalização, escalarizações, grades e filtro de Pareto;
+- `scripts/run_multi_experiments.py`: execução e análise experimental multiobjetivo.
 
 A heurística construtiva foi consolidada por seguir a sugestão do enunciado (D013); não deve ser apresentada como empiricamente superior a outras construtivas.

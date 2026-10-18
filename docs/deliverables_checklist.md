@@ -25,35 +25,36 @@
 - [x] tratamento de inviabilidade (D007)
 - [x] aceitação (D016)
 - [x] parada (D010)
-- [x] pseudocódigo completo (`docs/gvns_decisoes.md`; falta passar para o relatório)
+- [x] pseudocódigo completo (`docs/gvns_decisoes.md` e `report/main.tex`)
 
 ### Experimentos
 - [x] script de experimentos (`scripts/run_mono_experiments.py`)
-- [ ] calibração dos parâmetros experimentais (orçamento, amostra, P1/P2/P3)
-- [ ] congelar configuração e registrar as 5 seeds finais (D017)
-- [ ] 5 execuções de \(f_1\)
-- [ ] 5 execuções de \(f_2\)
-- [ ] 5 execuções de \(f_3\)
-- [ ] min/std/max
-- [ ] curvas de convergência
-- [ ] visualização das melhores soluções
+- [x] calibração dos parâmetros experimentais (orçamento, amostra, P1/P2/P3)
+- [x] congelar configuração e registrar as 5 seeds finais (D017)
+- [x] 5 execuções de \(f_1\)
+- [x] 5 execuções de \(f_2\)
+- [x] 5 execuções de \(f_3\)
+- [x] min/std/max
+- [x] curvas de convergência
+- [x] visualização das melhores soluções
 
 ### Entregáveis
-- [ ] relatório (formulação, algoritmo, pseudocódigo, experimentos, análise)
+- [x] conteúdo da Entrega 1 no relatório cumulativo
 - [ ] apresentação de até 10 minutos
 
 ## Entrega 2 — multiobjetivo
 
-- [ ] normalização baseada na Entrega 1
-- [ ] Soma Ponderada
-- [ ] epsilon-restrito
-- [ ] pesos justificados
-- [ ] valores de epsilon justificados
-- [ ] 5 execuções por abordagem/configuração definida
-- [ ] soluções não dominadas
-- [ ] projeções f1 x f2, f1 x f3 e f2 x f3
-- [ ] comparação de variabilidade e regiões alcançadas
-- [ ] relatório cumulativo
+- [x] normalização baseada na Entrega 1
+- [x] Soma Ponderada
+- [x] epsilon-restrito
+- [x] pesos justificados
+- [x] valores de epsilon justificados
+- [x] 5 execuções por abordagem/configuração definida
+- [x] soluções não dominadas
+- [x] projeções f1 x f2, f1 x f3 e f2 x f3
+- [x] comparação de variabilidade e regiões alcançadas no relatório
+- [x] conteúdo cumulativo em `report/main.tex`
+- [ ] revisão final do grupo e submissão do relatório e códigos
 
 ## Entrega 3 — decisão multicritério
 
