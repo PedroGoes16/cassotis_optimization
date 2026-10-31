@@ -1,0 +1,25 @@
+{
+  "decision_id": "D027",
+  "description": "Sensibilidade PROMETHEE I/II: limiares q/p e pesos, sempre sobre as mesmas 91 alternativas D023.",
+  "baseline": {
+    "q_fraction": 0.01,
+    "p_fraction": 0.25,
+    "weights_source": "results/mcda/pesos_ahp.json"
+  },
+  "threshold_scenarios": [
+    {"id": "L01", "label": "Preferencia mais rapida", "q": 0.00, "p": 0.20},
+    {"id": "L02", "label": "Base D026", "q": 0.01, "p": 0.25},
+    {"id": "L03", "label": "Preferencia mais gradual", "q": 0.02, "p": 0.30},
+    {"id": "L04", "label": "Indiferenca ampliada", "q": 0.05, "p": 0.25},
+    {"id": "L05", "label": "Sem indiferenca e preferencia gradual", "q": 0.00, "p": 0.30},
+    {"id": "L06", "label": "Indiferenca moderada e preferencia rapida", "q": 0.02, "p": 0.20},
+    {"id": "L07", "label": "Indiferenca ampliada e preferencia gradual", "q": 0.05, "p": 0.30}
+  ],
+  "cost_weight_scenarios": [0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80],
+  "notes": [
+    "Limiar q/p uniforme entre os quatro criterios em cada cenario, como ensaio controlado; valores absolutos diferentes conforme amplitudes.",
+    "Na sensibilidade de pesos o peso de custo assume o valor especificado, e os pesos dos tres outros criterios sao reescalados proporcionalmente para soma 1.",
+    "Variacoes de pesos sao contrafactuais. Nao substituem os seis julgamentos AHP D024, nem preservam necessariamente uma matriz AHP consistente.",
+    "Parametros e pesos foram variados separadamente. Nenhum cenario novo representa preferencias da Cassotis."
+  ]
+}

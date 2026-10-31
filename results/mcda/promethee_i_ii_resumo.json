@@ -154,7 +154,7 @@
     "matrix": "6ea5e4b5738688404a9410f33f7e4b49eb8d6e27af5d6bf818e6c17d993cc56d",
     "weights": "09cd85104da2c86a4bd29f817f89a3e90bb075f2878688ea0dbc8b851f792da2",
     "parameters": "4051863f0cc6a22906e51501f2994792e3a2f217ae61d13543fcad9a5df757b8",
-    "electre_summary": "7e41b81099026bc9580463642e9f58d34578e4a224b3386fd2142068d4266cd6"
+    "electre_summary": "eac4d50186eaf9d86e71aed5af4fd347574e5cbc8346cbb5f4536fb494cf3744"
   },
   "electre_comparison": {
     "electre_kernel_size": 9,

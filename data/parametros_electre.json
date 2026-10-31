@@ -1,6 +1,6 @@
 {
   "decision_id": "D025",
-  "status": "EXPLORATORIO_PENDENTE_DE_APROVACAO",
+  "status": "CONFIRMADO",
   "scenario": "Preferencias academicas do grupo, pesos AHP da D024; limiares ELECTRE ainda propostos.",
   "variant": "ELECTRE I",
   "criterion_order": ["f1", "f2", "f3", "c4"],

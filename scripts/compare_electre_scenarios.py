@@ -5,7 +5,6 @@ from pathlib import Path
 
 from cassotis_optimization.mcda.electre import electre_i
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 with (ROOT / "results/mcda/matriz_decisao.csv").open(

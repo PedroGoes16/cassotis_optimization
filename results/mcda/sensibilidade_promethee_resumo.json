@@ -1,0 +1,49 @@
+{
+  "decision_id": "D027",
+  "status": "SENSIBILIDADE_EXECUTADA_CENARIO_ACADEMICO",
+  "alternative_count": 91,
+  "threshold_scenario_count": 7,
+  "weight_scenario_count": 7,
+  "base_top1": "A020",
+  "base_phi_top1": 0.5292317868364013,
+  "winner_is_stable_across_thresholds": true,
+  "threshold_winners": [
+    "A020"
+  ],
+  "threshold_second_positions_of_A016": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "threshold_ranges": {
+    "q_min": 0.0,
+    "q_max": 0.05,
+    "p_min": 0.2,
+    "p_max": 0.3
+  },
+  "weight_winners": {
+    "0.50": "A020",
+    "0.55": "A020",
+    "0.60": "A020",
+    "0.65": "A020",
+    "0.70": "A020",
+    "0.75": "A002",
+    "0.80": "A002"
+  },
+  "sensitivity_conclusions": [
+    "Robustez observada apenas no conjunto discreto de cenarios explorados, nao em todas as preferencias possiveis.",
+    "Limiares relativos sao hipoteses academicas sem calibracao operacional externa.",
+    "Cenarios de pesos sao contrafactuais; matriz AHP D024 permanece inalterada.",
+    "Os fluxos e posicoes PROMETHEE dependem das 91 alternativas em conjunto."
+  ],
+  "input_sha256": {
+    "matrix": "6ea5e4b5738688404a9410f33f7e4b49eb8d6e27af5d6bf818e6c17d993cc56d",
+    "weights": "09cd85104da2c86a4bd29f817f89a3e90bb075f2878688ea0dbc8b851f792da2",
+    "parameters": "4051863f0cc6a22906e51501f2994792e3a2f217ae61d13543fcad9a5df757b8",
+    "protocol": "0740ecc39dbe8e7ecc6da1129c9f4634c2161b3042523e7093718a50788bbca6"
+  }
+}

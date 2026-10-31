@@ -542,11 +542,11 @@
     }
   ],
   "caveat": "O núcleo é uma seleção de escolha, não um ranking nem uma prova de ótima solução. Se o grafo tiver ciclos, este procedimento não declara núcleo e exige tratamento explícito.",
-  "scenario_status": "EXPLORATORIO_PENDENTE_DE_APROVACAO",
+  "scenario_status": "CONFIRMADO",
   "input_sha256": {
     "matrix": "6ea5e4b5738688404a9410f33f7e4b49eb8d6e27af5d6bf818e6c17d993cc56d",
     "weights": "09cd85104da2c86a4bd29f817f89a3e90bb075f2878688ea0dbc8b851f792da2",
-    "parameters": "3652f272d1e6b0cb3ab046299a46d6b8e4ddf27905a2a7658d9a62334fe7e5ad"
+    "parameters": "c2f3c5d2382129776d06d3ff66e448f187570a09b05e0f9ee3b3c7390273d119"
   },
   "preference_rationale": {
     "concordance": "Com os pesos da D024, custo isolado tem 0,6474, custo mais um criterio quimico 0,7256, custo mais homogeneidade 0,8436 e custo mais ambos quimicos 0,8038. O limiar 0,80 impede apoio somente no custo, mas ainda permite coligacoes envolvendo homogeneidade ou ambos desvios.",
