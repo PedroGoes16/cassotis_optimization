@@ -66,10 +66,10 @@
     ]
   ],
   "weight_method": "normalized_column_row_mean",
-  "lambda_max": 4.073466993458651,
-  "consistency_index": 0.024488997819550384,
+  "lambda_max": 4.07346699345865,
+  "consistency_index": 0.02448899781955009,
   "random_index": 0.9,
-  "consistency_ratio": 0.027209997577278204,
+  "consistency_ratio": 0.027209997577277878,
   "maximum_consistency_ratio": 0.1,
   "consistent": true,
   "note": "CR usa autovalor principal; os pesos usam médias das colunas normalizadas."
