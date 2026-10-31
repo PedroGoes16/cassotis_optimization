@@ -1,0 +1,76 @@
+{
+  "decision_id": "D024",
+  "scenario": "Preferências acadêmicas assumidas pelo grupo; não representam preferências oficialmente declaradas pela Cassotis ou pela professora.",
+  "criterion_order": [
+    "f1",
+    "f2",
+    "f3",
+    "c4"
+  ],
+  "weights": {
+    "f1": 0.6474358974358975,
+    "f2": 0.0782051282051282,
+    "f3": 0.0782051282051282,
+    "c4": 0.19615384615384615
+  },
+  "matrix": [
+    [
+      1.0,
+      7.0,
+      7.0,
+      5.0
+    ],
+    [
+      0.14285714285714285,
+      1.0,
+      1.0,
+      0.3333333333333333
+    ],
+    [
+      0.14285714285714285,
+      1.0,
+      1.0,
+      0.3333333333333333
+    ],
+    [
+      0.2,
+      3.0,
+      3.0,
+      1.0
+    ]
+  ],
+  "normalized_matrix": [
+    [
+      0.6730769230769231,
+      0.5833333333333334,
+      0.5833333333333334,
+      0.7500000000000001
+    ],
+    [
+      0.09615384615384616,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.05
+    ],
+    [
+      0.09615384615384616,
+      0.08333333333333333,
+      0.08333333333333333,
+      0.05
+    ],
+    [
+      0.13461538461538464,
+      0.25,
+      0.25,
+      0.15000000000000002
+    ]
+  ],
+  "weight_method": "normalized_column_row_mean",
+  "lambda_max": 4.073466993458651,
+  "consistency_index": 0.024488997819550384,
+  "random_index": 0.9,
+  "consistency_ratio": 0.027209997577278204,
+  "maximum_consistency_ratio": 0.1,
+  "consistent": true,
+  "note": "CR usa autovalor principal; os pesos usam médias das colunas normalizadas."
+}

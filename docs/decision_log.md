@@ -754,3 +754,80 @@ Assim, \(0\le C_4\le 1\), e \(C_4=0\) significa que as pilhas de cada equipament
 **Saídas:** `results/mcda/matriz_decisao.csv` e `results/mcda/diagnostico_d023.json`.
 
 **Validação:** `tests/test_build_mcda_matrix.py`, comparação dos valores de objetivos e factibilidade dos JSON com o CSV, verificação das massas/pilhas e verificação dos conflitos par-a-par. A medição completa e a consolidação dependem da execução no checkout oficial com as 91 alternativas.
+
+---
+
+## D024 — Elicitação de preferências e pesos dos critérios via AHP
+
+**Status:** CONFIRMADA — cenário-base de preferências fornecido pelo grupo; aplicação em ELECTRE/PROMETHEE e análise de sensibilidade pendentes.
+
+**Objeto da decisão:** obter pesos para os quatro critérios da D023 usando AHP como técnica **auxiliar de elicitação de preferências**. Os dois métodos principais de decisão e comparação de alternativas serão selecionados/implementados separadamente. AHP nesta etapa **não ordena as 91 alternativas**. Todas as alternativas da matriz da D023 permanecem elegíveis.
+
+**Origem dos julgamentos:** matriz de comparações par a par fornecida pelo grupo e inicialmente calculada no SpiceLogic AHP Calculator (`https://spicelogic.com/ahp-calculator`). São **preferências assumidas para o cenário acadêmico**, não preferências verificadas da Cassotis ou da professora. A importância foi interpretada considerando os intervalos observados nas 91 alternativas, e não apenas os nomes isolados dos critérios.
+
+**Critérios e melhorias de referência (pior para melhor valor observado na matriz D023):**
+
+| Critério | Significado | Amplitude de referência |
+|---|---|---|
+| \(C_1=f_1\) | custo total | R$ 65,82 mi → R$ 59,68 mi; redução R$ 6,14 mi |
+| \(C_2=f_2\) | soma de desvios quadráticos de SiO₂ | 6,939554 → 2,372752; redução 4,566802 |
+| \(C_3=f_3\) | soma de desvios quadráticos de Al₂O₃ | 6,634568 → 1,421458; redução 5,213110 |
+| \(C_4\) | heterogeneidade de receitas entre pilhas | 0,480128 → 0,282871; redução 0,197257 |
+
+Essas diferenças são amplitudes descritivas da amostra, não ganhos que possam ser necessariamente obtidos simultaneamente. SiO₂ e Al₂O₃ são **desvios quadráticos de teores**, não valores diretos de pureza.
+
+### Os seis julgamentos independentes (escala de Saaty)
+
+| Par | Preferência do grupo | Intensidade | Entrada \(a_{ij}\) | Fundamentação do cenário-base |
+|---|---|---:|---:|---|
+| Custo × SiO₂ | Custo | 7 (muito forte) | 7 | A redução de R$ 6,14 mi é julgada muito mais valiosa do que a melhoria integral observada em \(f_2\). |
+| Custo × Al₂O₃ | Custo | 7 (muito forte) | 7 | A mesma prioridade pelo custo é atribuída frente à melhoria integral observada em \(f_3\). |
+| Custo × Heterogeneidade | Custo | 5 (forte) | 5 | A redução de custo é julgada mais valiosa que a padronização de receitas, embora esta permaneça relevante. |
+| SiO₂ × Al₂O₃ | Igual importância | 1 | 1 | Não há prioridade adicional assumida entre os desvios quadráticos dos dois óxidos. |
+| SiO₂ × Heterogeneidade | Heterogeneidade | 3 (moderada) | 1/3 | O grupo atribui importância moderadamente superior à homogeneização das receitas. |
+| Al₂O₃ × Heterogeneidade | Heterogeneidade | 3 (moderada) | 1/3 | Mesma justificativa operacional para o par anterior. |
+
+Essas justificativas descrevem **o significado dos julgamentos fornecidos**, sem alegar comprovação econômica externa. O cenário dá peso alto ao custo e considera a padronização de receitas relevante; todas as alternativas da D023 já atendem às restrições químicas originais. Mesmo assim, menor desvio químico continua sendo desejável e sua baixa prioridade relativa exigirá análise de sensibilidade.
+
+**Matriz de comparações** (linhas e colunas na ordem \(f_1,f_2,f_3,C_4\)):
+
+\[
+A=\begin{pmatrix}
+1&7&7&5\\
+1/7&1&1&1/3\\
+1/7&1&1&1/3\\
+1/5&3&3&1
+\end{pmatrix}.
+\]
+
+Para todo par distinto, \(a_{ji}=1/a_{ij}\). O registro declarativo em `data/preferencias_ahp.json` guarda os seis julgamentos, critério favorecido, intensidade e justificativa; não armazena apenas os pesos finais.
+
+**Extração dos pesos:** normalizar cada coluna da matriz e tomar a média aritmética das linhas (método de *aproximação por colunas normalizadas*, correspondente aos pesos apresentados pelo SpiceLogic). Se \(s_j=\sum_i a_{ij}\), então:
+
+\[
+\widetilde{a}_{ij}=a_{ij}/s_j,
+\qquad
+w_i=\frac{1}{4}\sum_{j=1}^4\widetilde{a}_{ij}.
+\]
+
+Pesos completos obtidos pelo script (ordem \(f_1,f_2,f_3,C_4\)):
+
+\[
+w=(0{,}6474358974;\ 0{,}0782051282;\ 0{,}0782051282;\ 0{,}1961538462).
+\]
+
+Os pesos apresentados arredondados são **64,74% custo; 7,82% SiO₂; 7,82% Al₂O₃; 19,62% heterogeneidade**. Na implementação, manter a precisão total para evitar soma diferente de 1 pelo arredondamento.
+
+**Teste de consistência:** usar o maior autovalor da matriz recíproca original \(\lambda_{\max}\), não a média dos autovalores ponderada pelos pesos aproximados. Para \(n=4\), adotar \(RI=0{,}90\):
+
+\[
+CI=\frac{\lambda_{\max}-4}{3},\qquad CR=\frac{CI}{0{,}90}.
+\]
+
+Para os julgamentos registrados: \(\lambda_{\max}\approx4{,}073467\); \(CI\approx0{,}024489\); **\(CR\approx0{,}027210<0{,}10\)**. A matriz atende ao limite convencional de consistência, mas isso não certifica que os pesos sejam objetivamente corretos nem substitui sua justificação operacional.
+
+**Procedimentos alternativos considerados:** Swing Weighting (mais explícito quanto ao valor dos ganhos nas escalas reais) e autovetor principal como forma alternativa de extrair pesos AHP. Preferiu-se AHP pela facilidade de registrar comparações e testar a consistência; adotou-se a média das colunas normalizadas para reproduzir exatamente o método usado pelo grupo no SpiceLogic. O autovetor principal é utilizado **somente** para a verificação de consistência.
+
+**Reprodutibilidade:** `data/preferencias_ahp.json`, `src/cassotis_optimization/mcda/ahp.py` e `scripts/calculate_ahp_weights.py`. Saída calculada: `results/mcda/pesos_ahp.json`. Testes: `tests/test_ahp.py` (incluem reconstrução da matriz, reciprocidade, pesos, CR e rejeição de registros incompletos/duplicados). O script verifica também as amplitudes da matriz oficial da D023 antes de exportar os pesos.
+
+**Consequências:** reutilizar esse mesmo vetor-base em ELECTRE e PROMETHEE, cujos limiares e funções de preferência serão decididos posteriormente. Realizar análise de sensibilidade aumentando a importância relativa dos desvios químicos e modificando parâmetros de decisão. Não modificar a matriz original de 91 alternativas nem reexecutar a GVNS para esta etapa.

@@ -1,0 +1,46 @@
+{
+  "decision_id": "D024",
+  "status": "CENARIO_BASE_CONFIRMADO",
+  "scenario": "Preferências acadêmicas assumidas pelo grupo; não representam preferências oficialmente declaradas pela Cassotis ou pela professora.",
+  "elicitation_source": "Matriz de comparações par a par fornecida pelo grupo, calculada inicialmente no SpiceLogic AHP Calculator.",
+  "matrix_source": "results/mcda/matriz_decisao.csv",
+  "criteria": [
+    {"id": "f1", "name": "Custo total", "direction": "min", "unit": "R$", "observed_min": 59680000.0, "observed_max": 65820000.0},
+    {"id": "f2", "name": "Desvio quadrático de SiO2", "direction": "min", "unit": "soma de desvios quadráticos", "observed_min": 2.372751837832068, "observed_max": 6.93955413604966},
+    {"id": "f3", "name": "Desvio quadrático de Al2O3", "direction": "min", "unit": "soma de desvios quadráticos", "observed_min": 1.4214579679821786, "observed_max": 6.634567656013078},
+    {"id": "c4", "name": "Heterogeneidade das receitas entre pilhas", "direction": "min", "unit": "adimensional", "observed_min": 0.282871132565405, "observed_max": 0.48012820555777214}
+  ],
+  "comparisons": [
+    {
+      "left": "f1", "right": "f2", "preferred": "f1", "intensity": 7,
+      "justification": "Preferência muito forte pelo ganho de custo (R$ 6,14 milhões de redução observada no conjunto) frente ao ganho de desvio quadrático de SiO2 (redução de aproximadamente 4,5668). Julgamento adotado pelo grupo para o cenário-base."
+    },
+    {
+      "left": "f1", "right": "f3", "preferred": "f1", "intensity": 7,
+      "justification": "Preferência muito forte pelo ganho de custo frente ao ganho no desvio quadrático de Al2O3 (redução de aproximadamente 5,2131). Julgamento adotado pelo grupo para o cenário-base."
+    },
+    {
+      "left": "f1", "right": "c4", "preferred": "f1", "intensity": 5,
+      "justification": "Preferência forte pelo ganho de custo frente à redução da heterogeneidade das receitas (aproximadamente 0,1973 na escala adimensional observada). Julgamento adotado pelo grupo para o cenário-base."
+    },
+    {
+      "left": "f2", "right": "f3", "preferred": null, "intensity": 1,
+      "justification": "O grupo considerou igualmente importantes as melhorias observadas nos dois indicadores de desvio químico, pois não adotou evidência para priorizar um sobre o outro."
+    },
+    {
+      "left": "f2", "right": "c4", "preferred": "c4", "intensity": 3,
+      "justification": "Preferência moderada pela homogeneização das receitas frente à redução do desvio quadrático de SiO2, pois a padronização operacional é valorizada no cenário-base, sem substituir a factibilidade química obrigatória."
+    },
+    {
+      "left": "f3", "right": "c4", "preferred": "c4", "intensity": 3,
+      "justification": "Preferência moderada pela homogeneização das receitas frente à redução do desvio quadrático de Al2O3, pelo mesmo raciocínio aplicado ao desvio de SiO2."
+    }
+  ],
+  "calculation": {
+    "weights_method": "normalized_column_row_mean",
+    "consistency_method": "principal_eigenvalue",
+    "random_index_n4": 0.90,
+    "maximum_consistency_ratio": 0.10,
+    "note": "Pesos derivados da média das linhas da matriz normalizada por colunas (SpiceLogic). A consistência usa o maior autovalor da matriz original; portanto, não confundir esses pesos com o autovetor principal."
+  }
+}
