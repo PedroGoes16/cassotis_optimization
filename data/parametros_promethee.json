@@ -1,7 +1,7 @@
 {
   "decision_id": "D026",
-  "status": "EXPLORATORIO_PENDENTE_DE_APROVACAO",
-  "scenario": "Preferencias academicas do grupo; pesos AHP D024 confirmados, limiares PROMETHEE ainda exploratorios.",
+  "status": "CENARIO_BASE_CONFIRMADO",
+  "scenario": "Cenario-base academico confirmado pelo grupo apos analise de sensibilidade D027: q=1% e p=25% da amplitude observada em cada criterio. Pesos AHP D024 mantidos.",
   "variant": "PROMETHEE I/II",
   "criterion_order": ["f1", "f2", "f3", "c4"],
   "criteria_direction": "min",
@@ -21,5 +21,5 @@
     "weight": "O vetor AHP de D024 e reutilizado sem alteracoes em PROMETHEE I e II.",
     "interpretation": "I apresenta incomparabilidades por fluxos separados; II apresenta ordenacao por fluxo liquido. Nao confundir a ordenacao II com decisao formal da empresa."
   },
-  "sensitivity_note": "Na fase seguinte verificar cenarios alternativos de q/p e pesos para evitar superinterpretar resultado de uma unica calibracao. Nao escolher q/p para forcar uma alternativa vencedora."
+  "sensitivity_note": "Sensibilidade calibrada pelo grupo D027: q=1% e p=25% da amplitude observada em cada criterio. Nao escolher parametros para forcar uma alternativa vencedora."
 }

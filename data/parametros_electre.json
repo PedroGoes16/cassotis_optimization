@@ -1,7 +1,7 @@
 {
   "decision_id": "D025",
-  "status": "CONFIRMADO",
-  "scenario": "Preferencias academicas do grupo, pesos AHP da D024; limiares ELECTRE ainda propostos.",
+  "status": "CENARIO_BASE_CONFIRMADO",
+  "scenario": "Preferencias academicas do grupo, pesos AHP da D024 confirmados, limiares ELECTRE exploratorios.",
   "variant": "ELECTRE I",
   "criterion_order": ["f1", "f2", "f3", "c4"],
   "criteria_direction": "min",
@@ -19,5 +19,5 @@
     "veto": "Como os quatro criterios possuem unidades distintas, o veto exploratorio corresponde a 40% da amplitude observada de cada criterio na matriz D023; exige justificativa e analise de sensibilidade antes da consolidacao.",
     "tradeoff": "O custo concentra mais da metade do peso AHP. Portanto, qualquer concordancia acima de 0,5 exige que custo de a seja menor ou igual ao de b para aSb; esse vies e uma consequencia dos julgamentos do grupo, nao um defeito no ELECTRE."
   },
-  "parameter_status_note": "Nao interpretar os limiares como preferencias da empresa nem como valores recomendados pela professora. Confirmar pelo grupo antes de chamar o resultado de oficial."
+  "parameter_status_note": "Limiares confirmados pelo grupo após análise de sensibilidade D027: concordancia 0,80 e veto 40% da amplitude observada em cada criterio. Nao escolher limiares para forcar uma alternativa vencedora."
 }
