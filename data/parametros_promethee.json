@@ -1,0 +1,25 @@
+{
+  "decision_id": "D026",
+  "status": "EXPLORATORIO_PENDENTE_DE_APROVACAO",
+  "scenario": "Preferencias academicas do grupo; pesos AHP D024 confirmados, limiares PROMETHEE ainda exploratorios.",
+  "variant": "PROMETHEE I/II",
+  "criterion_order": ["f1", "f2", "f3", "c4"],
+  "criteria_direction": "min",
+  "matrix_source": "results/mcda/matriz_decisao.csv",
+  "weights_source": "results/mcda/pesos_ahp.json",
+  "preference_parameters": {
+    "f1": {"function": "v_shape_with_indifference", "q_fraction_of_observed_range": 0.01, "p_fraction_of_observed_range": 0.25},
+    "f2": {"function": "v_shape_with_indifference", "q_fraction_of_observed_range": 0.01, "p_fraction_of_observed_range": 0.25},
+    "f3": {"function": "v_shape_with_indifference", "q_fraction_of_observed_range": 0.01, "p_fraction_of_observed_range": 0.25},
+    "c4": {"function": "v_shape_with_indifference", "q_fraction_of_observed_range": 0.01, "p_fraction_of_observed_range": 0.25}
+  },
+  "rationale": {
+    "family": "Funcao em V com indiferenca (tipo V entre seis funcoes de preferencia PROMETHEE): sem salto abrupto entre desempenho quase igual e preferencia forte.",
+    "q": "q=1% da amplitude da matriz D023: diferencas muito pequenas sao tratadas como indiferentes na contribuicao daquele criterio. Proposta exploratoria, nao valor fisico calibrado.",
+    "p": "p=25% da amplitude da matriz D023: a partir dessa melhoria, a preferencia daquele criterio atinge grau 1. Proposta exploratoria, nao valor inferido do AHP.",
+    "directions": "Para minimizacao, a melhoria de a sobre b no criterio j e f_j(b)-f_j(a); diferenca negativa nao favorece a.",
+    "weight": "O vetor AHP de D024 e reutilizado sem alteracoes em PROMETHEE I e II.",
+    "interpretation": "I apresenta incomparabilidades por fluxos separados; II apresenta ordenacao por fluxo liquido. Nao confundir a ordenacao II com decisao formal da empresa."
+  },
+  "sensitivity_note": "Na fase seguinte verificar cenarios alternativos de q/p e pesos para evitar superinterpretar resultado de uma unica calibracao. Nao escolher q/p para forcar uma alternativa vencedora."
+}

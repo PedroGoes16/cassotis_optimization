@@ -836,7 +836,7 @@ Para os julgamentos registrados: \(\lambda_{\max}\approx4{,}073467\); \(CI\appro
 
 ## D025 — ELECTRE I: sobreclassificação, vetos e núcleo de escolha
 
-**Status: PROPOSTA EXPLORATÓRIA — limiares pendentes de aprovação pelo grupo.**
+**Status atualizado:** **CONFIRMADA — cenário-base acadêmico** (sem alegar calibração ótima).
 
 **Base das alternativas:** `results/mcda/matriz_decisao.csv` (91 alternativas, D023),
 sem reexecutar a GVNS. Os quatro critérios são minimizados: custo \(f_1\),
@@ -966,3 +966,160 @@ revisão *Fifty years of multiple criteria decision analysis*,
 European Journal of Operational Research (2025), DOI
 `10.1016/j.ejor.2024.07.038`. Os valores específicos de \(\lambda\) e \(v_j\)
 são **decisões propostas pelo grupo**, não extraídos dessas fontes.
+
+O grupo decidiu **manter ELECTRE I com concordância mínima de 0,80 e veto de
+0,40 da amplitude observada para cada um dos quatro critérios**, preservando
+os pesos da D024. A decisão segue discussão dos resultados e análise de
+sensibilidade exploratória (`results/mcda/sensibilidade_electre.csv`). Não
+modificar a matriz de decisão, os resultados oficiais da Entrega 2 ou os pesos.
+
+No cenário-base, o conjunto de escolha calculado pelo procedimento adotado
+contém **nove alternativas**: A001, A002, A014, A016, A020, A034, A060, A062,
+A066. **Seis alternativas** (A001, A002, A014, A016, A020 e A034) foram
+observadas em todos os núcleos determinados nos cenários estudados de
+sensibilidade; essa observação não transforma o conjunto-base de nove em seis.
+Com vetos de 50% em f2 e f3 (custo 20% e c4 60%), o núcleo passa a seis.
+
+**Justificativa de manutenção:** manter os limiares inicialmente propostos,
+em vez de selecionar retroativamente a configuração que gera menos
+alternativas, evita ajuste oportunista. As diferenças e limitações da
+sensibilidade foram examinadas; análise complementar poderá ser realizada
+se a comparação posterior com PROMETHEE indicar necessidade.
+
+**Limitação:** são preferências acadêmicas assumidas pelo grupo, não parâmetros
+confirmados por decisores da Cassotis. A aprovação do cenário-base pelo grupo
+não constitui validação operacional externa.
+
+**Sincronização do arquivo de parâmetros:** em `data/parametros_electre.json`,
+atualizar apenas o campo `status` para `CENARIO_BASE_CONFIRMADO` e o campo
+`parameter_status_note` para indicar que os limiares foram adotados pelo grupo
+como hipótese acadêmica. **Reexecutar `python scripts/run_electre.py` após essa
+mudança**, pois o resumo inclui hash do arquivo de parâmetros e rótulo de
+status. Não modificar `concordance_threshold` nem os quatro vetos.
+
+---
+
+## D026 — PROMETHEE I/II: fluxos de preferência e ordenação
+
+**Status:** IMPLEMENTADA — cenário-base de limiares **EXPLORATÓRIO, pendente de
+justificativa/aprovação pelo grupo**. Os pesos AHP da D024 já estão confirmados.
+
+**Escopo e dados:** as mesmas 91 alternativas e quatro critérios todos de
+minimização da D023 (`results/mcda/matriz_decisao.csv`). Não reexecutar a
+GVNS, não refiltrar a frente, não modificar a D024 nem os limiares do
+ELECTRE D025.
+
+**Decisão metodológica:** implementar **PROMETHEE I e II** a partir de
+*um único* conjunto de índices de preferência agregados e fluxos.
+PROMETHEE I produz uma relação parcial (preferência, indiferença,
+incomparabilidade). PROMETHEE II produz um pré-ordenamento completo por
+fluxo líquido. As duas variantes não devem ser tratadas como experimentos
+independentes com preferências diferentes.
+
+### Matriz de desempenhos, pesos e sentido
+
+Adotar `f1` (R$), `f2` (soma de desvios quadráticos SiO₂), `f3` (soma de
+desvios quadráticos Al₂O₃), `c4` (distância média entre receitas de cada pilha
+e receita agregada do equipamento). Todos minimizados. Usar integralmente
+os pesos AHP confirmados da D024:
+
+\[
+w=(0{,}6474358974358975;\;0{,}0782051282051282;\;
+0{,}0782051282051282;\;0{,}19615384615384615).
+\]
+
+Os pesos representam preferências acadêmicas do grupo, **não** preferências
+empresariais demonstradas.
+
+### Função de preferência e parâmetros iniciais
+
+Para cada critério \(j\), definir \(d_j(a,b)=g_j(b)-g_j(a)\), pois menor
+é melhor. Se \(d_j(a,b)>0\), a alternativa \(a\) supera \(b\) naquele critério.
+Utilizar a função **em V com indiferença** (pseudocritério, tipo V na
+classificação clássica das seis funções PROMETHEE):
+
+\[
+P_j(a,b)=\begin{cases}
+0, & d_j(a,b)\leq q_j,\\
+\dfrac{d_j(a,b)-q_j}{p_j-q_j}, & q_j<d_j(a,b)<p_j,\\
+1, & d_j(a,b)\geq p_j.
+\end{cases}
+\]
+
+Os parâmetros exploratórios iniciais, a validar em discussão do grupo, são
+\(q_j=0{,}01\Delta_j\) e \(p_j=0{,}25\Delta_j\), com
+\(\Delta_j=\max_a g_j(a)-\min_a g_j(a)\), amplitude observada na D023.
+Não confundir porcentagem da amplitude com porcentagem de teor de minério
+ou custo monetário. Não existem dados de limiar físico validados pelo decisor;
+estes valores não são fornecidos pelo AHP nem pela professora.
+
+As amplitudes originais levam, aproximadamente, a:
+
+| Critério | \(\Delta_j\) | \(q_j=1\%\Delta_j\) | \(p_j=25\%\Delta_j\) |
+|---|---:|---:|---:|
+| Custo \(f_1\) | R$ 6.140.000 | R$ 61.400 | R$ 1.535.000 |
+| Desvio SiO₂ \(f_2\) | 4,566802 | 0,045668 | 1,141701 |
+| Desvio Al₂O₃ \(f_3\) | 5,213110 | 0,052131 | 1,303277 |
+| Heterogeneidade \(c_4\) | 0,197257 | 0,001973 | 0,049314 |
+
+**Interpretação:** diferenças inferiores a \(q_j\) não geram preferência
+naquele critério; diferenças entre \(q_j\) e \(p_j\) geram preferência
+gradual; acima de \(p_j\), a preferência daquele critério é plena. Os
+mesmos valores relativos iniciais em quatro critérios não implicam que as
+tolerâncias reais sejam iguais: as unidades e amplitudes são distintas.
+Os valores são hipóteses para ensaio, **não calibrados para favorecer A020**.
+
+### Índices e fluxos
+
+Para \(n=91\), o índice agregado é
+
+\[
+\pi(a,b)=\sum_j w_j P_j(a,b),\quad
+\phi^+(a)=\frac{1}{n-1}\sum_{b\ne a}\pi(a,b),\quad
+\phi^-(a)=\frac{1}{n-1}\sum_{b\ne a}\pi(b,a).
+\]
+
+PROMETHEE I: \(a\) é preferida a \(b\) se
+\(\phi^+(a)\ge\phi^+(b)\) e \(\phi^-(a)\le\phi^-(b)\), com pelo menos uma
+desigualdade estrita. Se os dois fluxos forem iguais, há indiferença; se
+forem conflitantes, há incomparabilidade.
+
+PROMETHEE II: ordenar por \(\phi(a)=\phi^+(a)-\phi^-(a)\) em ordem
+decrescente. O fluxo líquido, entre -1 e 1, é **indicador de preferência
+relativa**, não custo, qualidade ou probabilidade. Desempates exatos não
+estão garantidos: quando os fluxos líquidos forem iguais, produzir empate.
+
+### Diagnóstico preliminar sobre a D023
+
+Um cálculo independente com as 91 alternativas e os limiares exploratórios
+acima indicou para PROMETHEE II: **A020 em 1º**
+(\(\phi\approx0{,}529232\)), **A016 em 2º**
+(\(\phi\approx0{,}508932\)) e **A002 em 3º**
+(\(\phi\approx0{,}485749\)). PROMETHEE I apresentou 198 pares
+incomparáveis dos 4.095 pares distintos.
+
+As três primeiras estão no núcleo do ELECTRE I cenário-base, cuja cardinalidade
+é nove. Não apresentar PROMETHEE II como confirmação automática da escolha
+ELECTRE, pois ambos utilizam os mesmos pesos e modelagens distintas.
+O ranking acima é **condicional aos parâmetros PROMETHEE ainda exploratórios**.
+
+**Alternativas e sensibilidade posterior:** confrontar a função em V com
+indiferença com cenários de limiares \(q=0\%,p=20\%\) e
+\(q=2\%,p=30\%\) da amplitude, mantendo inicialmente os pesos D024.
+Verificar, quando houver justificativa, alteração de pesos (sobretudo custo
+vs. química) separadamente da alteração dos limiares. Não omitir mudanças
+na ordenação nem declarar desempenho robusto sem teste.
+
+**Implementação:** `src/cassotis_optimization/mcda/promethee.py`,
+`data/parametros_promethee.json`, `scripts/run_promethee.py`,
+`tests/test_promethee.py`. Após execução no checkout oficial, exportar
+`results/mcda/promethee_ii_ranking.csv`,
+`results/mcda/promethee_i_relacoes.csv`,
+`results/mcda/promethee_i_ii_resumo.json`. Preservar identificadores das
+alternativas e, quando disponível, comparar as posições das nove candidatas
+do ELECTRE sem filtrar a matriz para a execução do PROMETHEE.
+
+**Fonte conceitual:** Bertrand Mareschal, *Preference functions and thresholds*
+(2018), material do autor; Brans, Vincke e Mareschal (1986), PROMETHEE.
+Os limiares adotados são decisões propostas pelo grupo e não foram
+extraídos dessas fontes.

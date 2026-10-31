@@ -1,0 +1,222 @@
+{
+  "method": "PROMETHEE I/II",
+  "description": "I: relacao parcial (fluxos separados); II: ranking (fluxo liquido)",
+  "alternative_count": 91,
+  "unordered_pairs": 4095,
+  "criterion_order": [
+    "f1",
+    "f2",
+    "f3",
+    "c4"
+  ],
+  "weights": {
+    "f1": 0.6474358974358975,
+    "f2": 0.0782051282051282,
+    "f3": 0.0782051282051282,
+    "c4": 0.19615384615384615
+  },
+  "criteria_direction": "min",
+  "preference_function": "v_shape_with_indifference",
+  "observed_thresholds": {
+    "f1": {
+      "observed_min": 59680000.0,
+      "observed_max": 65820000.0,
+      "observed_range": 6140000.0,
+      "q_fraction": 0.01,
+      "p_fraction": 0.25,
+      "q_absolute": 61400.0,
+      "p_absolute": 1535000.0
+    },
+    "f2": {
+      "observed_min": 2.372751837832068,
+      "observed_max": 6.93955413604966,
+      "observed_range": 4.566802298217592,
+      "q_fraction": 0.01,
+      "p_fraction": 0.25,
+      "q_absolute": 0.04566802298217592,
+      "p_absolute": 1.141700574554398
+    },
+    "f3": {
+      "observed_min": 1.4214579679821786,
+      "observed_max": 6.634567656013078,
+      "observed_range": 5.213109688030899,
+      "q_fraction": 0.01,
+      "p_fraction": 0.25,
+      "q_absolute": 0.052131096880308994,
+      "p_absolute": 1.3032774220077248
+    },
+    "c4": {
+      "observed_min": 0.282871132565405,
+      "observed_max": 0.48012820555777214,
+      "observed_range": 0.1972570729923671,
+      "q_fraction": 0.01,
+      "p_fraction": 0.25,
+      "q_absolute": 0.0019725707299236713,
+      "p_absolute": 0.04931426824809178
+    }
+  },
+  "promethee_i_pair_types": {
+    "a_preferida": 3556,
+    "b_preferida": 341,
+    "indiferentes": 0,
+    "incomparaveis": 198
+  },
+  "promethee_i_unbeaten": [
+    "A020",
+    "A016"
+  ],
+  "promethee_ii_top": [
+    {
+      "alternative_id": "A020",
+      "rank_promethee_ii": 1,
+      "phi_positive": 0.6612580587203227,
+      "phi_negative": 0.13202627188392146,
+      "phi_net": 0.5292317868364013
+    },
+    {
+      "alternative_id": "A016",
+      "rank_promethee_ii": 2,
+      "phi_positive": 0.6395325623551199,
+      "phi_negative": 0.130600100929079,
+      "phi_net": 0.5089324614260409
+    },
+    {
+      "alternative_id": "A002",
+      "rank_promethee_ii": 3,
+      "phi_positive": 0.6333287367399832,
+      "phi_negative": 0.14758008694557645,
+      "phi_net": 0.4857486497944068
+    },
+    {
+      "alternative_id": "A018",
+      "rank_promethee_ii": 4,
+      "phi_positive": 0.6269402805396218,
+      "phi_negative": 0.14282065618366366,
+      "phi_net": 0.4841196243559581
+    },
+    {
+      "alternative_id": "A017",
+      "rank_promethee_ii": 5,
+      "phi_positive": 0.6160944105238259,
+      "phi_negative": 0.14111579683388975,
+      "phi_net": 0.4749786136899361
+    },
+    {
+      "alternative_id": "A014",
+      "rank_promethee_ii": 6,
+      "phi_positive": 0.612371331511605,
+      "phi_negative": 0.1386204114677312,
+      "phi_net": 0.47375092004387387
+    },
+    {
+      "alternative_id": "A003",
+      "rank_promethee_ii": 7,
+      "phi_positive": 0.628266353259804,
+      "phi_negative": 0.15498982413298618,
+      "phi_net": 0.4732765291268178
+    },
+    {
+      "alternative_id": "A021",
+      "rank_promethee_ii": 8,
+      "phi_positive": 0.6117594833177945,
+      "phi_negative": 0.1468188256487268,
+      "phi_net": 0.46494065766906767
+    },
+    {
+      "alternative_id": "A012",
+      "rank_promethee_ii": 9,
+      "phi_positive": 0.5945706753686356,
+      "phi_negative": 0.1473826246188839,
+      "phi_net": 0.4471880507497517
+    },
+    {
+      "alternative_id": "A001",
+      "rank_promethee_ii": 10,
+      "phi_positive": 0.6242767953251086,
+      "phi_negative": 0.17996260462944622,
+      "phi_net": 0.44431419069566236
+    }
+  ],
+  "zero_sum_net_flow": 8.965050923848139e-15,
+  "note": "Limiar q/p relativo a amplitude observada nao resulta dos pesos AHP. PROMETHEE I pode registrar incomparabilidade mesmo quando II ordena o par. A ordenacao depende do conjunto de alternativas e dos parametros de preferencia.",
+  "decision_id": "D026",
+  "scenario_status": "EXPLORATORIO_PENDENTE_DE_APROVACAO",
+  "scenario": "Preferencias academicas do grupo; pesos AHP D024 confirmados, limiares PROMETHEE ainda exploratorios.",
+  "preference_rationale": {
+    "family": "Funcao em V com indiferenca (tipo V entre seis funcoes de preferencia PROMETHEE): sem salto abrupto entre desempenho quase igual e preferencia forte.",
+    "q": "q=1% da amplitude da matriz D023: diferencas muito pequenas sao tratadas como indiferentes na contribuicao daquele criterio. Proposta exploratoria, nao valor fisico calibrado.",
+    "p": "p=25% da amplitude da matriz D023: a partir dessa melhoria, a preferencia daquele criterio atinge grau 1. Proposta exploratoria, nao valor inferido do AHP.",
+    "directions": "Para minimizacao, a melhoria de a sobre b no criterio j e f_j(b)-f_j(a); diferenca negativa nao favorece a.",
+    "weight": "O vetor AHP de D024 e reutilizado sem alteracoes em PROMETHEE I e II.",
+    "interpretation": "I apresenta incomparabilidades por fluxos separados; II apresenta ordenacao por fluxo liquido. Nao confundir a ordenacao II com decisao formal da empresa."
+  },
+  "input_sha256": {
+    "matrix": "6ea5e4b5738688404a9410f33f7e4b49eb8d6e27af5d6bf818e6c17d993cc56d",
+    "weights": "09cd85104da2c86a4bd29f817f89a3e90bb075f2878688ea0dbc8b851f792da2",
+    "parameters": "4051863f0cc6a22906e51501f2994792e3a2f217ae61d13543fcad9a5df757b8",
+    "electre_summary": "7e41b81099026bc9580463642e9f58d34578e4a224b3386fd2142068d4266cd6"
+  },
+  "electre_comparison": {
+    "electre_kernel_size": 9,
+    "electre_kernel": [
+      "A001",
+      "A002",
+      "A014",
+      "A016",
+      "A020",
+      "A034",
+      "A060",
+      "A062",
+      "A066"
+    ],
+    "electre_ids_by_promethee_rank": [
+      {
+        "alternative_id": "A020",
+        "rank_promethee_ii": 1,
+        "phi_net": 0.5292317868364013
+      },
+      {
+        "alternative_id": "A016",
+        "rank_promethee_ii": 2,
+        "phi_net": 0.5089324614260409
+      },
+      {
+        "alternative_id": "A002",
+        "rank_promethee_ii": 3,
+        "phi_net": 0.4857486497944068
+      },
+      {
+        "alternative_id": "A014",
+        "rank_promethee_ii": 6,
+        "phi_net": 0.47375092004387387
+      },
+      {
+        "alternative_id": "A001",
+        "rank_promethee_ii": 10,
+        "phi_net": 0.44431419069566236
+      },
+      {
+        "alternative_id": "A034",
+        "rank_promethee_ii": 26,
+        "phi_net": 0.26486465968843276
+      },
+      {
+        "alternative_id": "A066",
+        "rank_promethee_ii": 60,
+        "phi_net": -0.12480072625220179
+      },
+      {
+        "alternative_id": "A062",
+        "rank_promethee_ii": 67,
+        "phi_net": -0.23261127825479225
+      },
+      {
+        "alternative_id": "A060",
+        "rank_promethee_ii": 68,
+        "phi_net": -0.23400369202847962
+      }
+    ],
+    "promethee_top1_in_electre_kernel": true,
+    "caveat": "Interseção descritiva, não fusão automática dos dois métodos."
+  }
+}
