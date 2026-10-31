@@ -1,0 +1,23 @@
+{
+  "decision_id": "D025",
+  "status": "EXPLORATORIO_PENDENTE_DE_APROVACAO",
+  "scenario": "Preferencias academicas do grupo, pesos AHP da D024; limiares ELECTRE ainda propostos.",
+  "variant": "ELECTRE I",
+  "criterion_order": ["f1", "f2", "f3", "c4"],
+  "criteria_direction": "min",
+  "weights_source": "results/mcda/pesos_ahp.json",
+  "matrix_source": "results/mcda/matriz_decisao.csv",
+  "concordance_threshold": 0.80,
+  "veto_fraction_of_observed_range": {
+    "f1": 0.40,
+    "f2": 0.40,
+    "f3": 0.40,
+    "c4": 0.40
+  },
+  "thresholds_rationale": {
+    "concordance": "Com os pesos da D024, custo isolado tem 0,6474, custo mais um criterio quimico 0,7256, custo mais homogeneidade 0,8436 e custo mais ambos quimicos 0,8038. O limiar 0,80 impede apoio somente no custo, mas ainda permite coligacoes envolvendo homogeneidade ou ambos desvios.",
+    "veto": "Como os quatro criterios possuem unidades distintas, o veto exploratorio corresponde a 40% da amplitude observada de cada criterio na matriz D023; exige justificativa e analise de sensibilidade antes da consolidacao.",
+    "tradeoff": "O custo concentra mais da metade do peso AHP. Portanto, qualquer concordancia acima de 0,5 exige que custo de a seja menor ou igual ao de b para aSb; esse vies e uma consequencia dos julgamentos do grupo, nao um defeito no ELECTRE."
+  },
+  "parameter_status_note": "Nao interpretar os limiares como preferencias da empresa nem como valores recomendados pela professora. Confirmar pelo grupo antes de chamar o resultado de oficial."
+}

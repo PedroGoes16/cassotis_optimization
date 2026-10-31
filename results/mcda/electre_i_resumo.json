@@ -1,0 +1,556 @@
+{
+  "method": "ELECTRE I — concordancia e veto absoluto relativo a amplitude",
+  "criteria": [
+    "f1",
+    "f2",
+    "f3",
+    "c4"
+  ],
+  "alternative_count": 91,
+  "unordered_pairs": 4095,
+  "ordered_comparisons_passing_concordance": 2510,
+  "ordered_comparisons_vetoed": 1608,
+  "outranking_arcs": 902,
+  "pair_types": {
+    "a_sobreclassifica_b": 886,
+    "b_sobreclassifica_a": 16,
+    "sobreclassificacao_mutua": 0,
+    "incomparaveis": 3193
+  },
+  "weights": {
+    "f1": 0.6474358974358975,
+    "f2": 0.0782051282051282,
+    "f3": 0.0782051282051282,
+    "c4": 0.19615384615384615
+  },
+  "concordance_threshold": 0.8,
+  "veto_relative_to_observed_range": {
+    "f1": 0.4,
+    "f2": 0.4,
+    "f3": 0.4,
+    "c4": 0.4
+  },
+  "observed_ranges": {
+    "f1": 6140000.0,
+    "f2": 4.566802298217592,
+    "f3": 5.213109688030899,
+    "c4": 0.1972570729923671
+  },
+  "veto_absolute": {
+    "f1": 2456000.0,
+    "f2": 1.8267209192870368,
+    "f3": 2.0852438752123597,
+    "c4": 0.07890282919694686
+  },
+  "not_outranked_by_any": [
+    "A001",
+    "A002",
+    "A014",
+    "A016",
+    "A020",
+    "A034"
+  ],
+  "per_alternative": [
+    {
+      "alternative_id": "A001",
+      "incoming": 0,
+      "outgoing": 8
+    },
+    {
+      "alternative_id": "A002",
+      "incoming": 0,
+      "outgoing": 13
+    },
+    {
+      "alternative_id": "A003",
+      "incoming": 1,
+      "outgoing": 13
+    },
+    {
+      "alternative_id": "A004",
+      "incoming": 4,
+      "outgoing": 2
+    },
+    {
+      "alternative_id": "A005",
+      "incoming": 3,
+      "outgoing": 5
+    },
+    {
+      "alternative_id": "A006",
+      "incoming": 5,
+      "outgoing": 0
+    },
+    {
+      "alternative_id": "A007",
+      "incoming": 4,
+      "outgoing": 1
+    },
+    {
+      "alternative_id": "A008",
+      "incoming": 3,
+      "outgoing": 4
+    },
+    {
+      "alternative_id": "A009",
+      "incoming": 4,
+      "outgoing": 4
+    },
+    {
+      "alternative_id": "A010",
+      "incoming": 8,
+      "outgoing": 0
+    },
+    {
+      "alternative_id": "A011",
+      "incoming": 6,
+      "outgoing": 1
+    },
+    {
+      "alternative_id": "A012",
+      "incoming": 2,
+      "outgoing": 7
+    },
+    {
+      "alternative_id": "A013",
+      "incoming": 2,
+      "outgoing": 5
+    },
+    {
+      "alternative_id": "A014",
+      "incoming": 0,
+      "outgoing": 12
+    },
+    {
+      "alternative_id": "A015",
+      "incoming": 4,
+      "outgoing": 4
+    },
+    {
+      "alternative_id": "A016",
+      "incoming": 0,
+      "outgoing": 15
+    },
+    {
+      "alternative_id": "A017",
+      "incoming": 2,
+      "outgoing": 11
+    },
+    {
+      "alternative_id": "A018",
+      "incoming": 1,
+      "outgoing": 12
+    },
+    {
+      "alternative_id": "A019",
+      "incoming": 8,
+      "outgoing": 10
+    },
+    {
+      "alternative_id": "A020",
+      "incoming": 0,
+      "outgoing": 14
+    },
+    {
+      "alternative_id": "A021",
+      "incoming": 3,
+      "outgoing": 10
+    },
+    {
+      "alternative_id": "A022",
+      "incoming": 3,
+      "outgoing": 22
+    },
+    {
+      "alternative_id": "A023",
+      "incoming": 6,
+      "outgoing": 13
+    },
+    {
+      "alternative_id": "A024",
+      "incoming": 14,
+      "outgoing": 3
+    },
+    {
+      "alternative_id": "A025",
+      "incoming": 9,
+      "outgoing": 6
+    },
+    {
+      "alternative_id": "A026",
+      "incoming": 7,
+      "outgoing": 10
+    },
+    {
+      "alternative_id": "A027",
+      "incoming": 14,
+      "outgoing": 8
+    },
+    {
+      "alternative_id": "A028",
+      "incoming": 9,
+      "outgoing": 14
+    },
+    {
+      "alternative_id": "A029",
+      "incoming": 2,
+      "outgoing": 19
+    },
+    {
+      "alternative_id": "A030",
+      "incoming": 18,
+      "outgoing": 10
+    },
+    {
+      "alternative_id": "A031",
+      "incoming": 1,
+      "outgoing": 19
+    },
+    {
+      "alternative_id": "A032",
+      "incoming": 9,
+      "outgoing": 15
+    },
+    {
+      "alternative_id": "A033",
+      "incoming": 13,
+      "outgoing": 14
+    },
+    {
+      "alternative_id": "A034",
+      "incoming": 0,
+      "outgoing": 34
+    },
+    {
+      "alternative_id": "A035",
+      "incoming": 1,
+      "outgoing": 40
+    },
+    {
+      "alternative_id": "A036",
+      "incoming": 5,
+      "outgoing": 18
+    },
+    {
+      "alternative_id": "A037",
+      "incoming": 13,
+      "outgoing": 1
+    },
+    {
+      "alternative_id": "A038",
+      "incoming": 7,
+      "outgoing": 16
+    },
+    {
+      "alternative_id": "A039",
+      "incoming": 13,
+      "outgoing": 3
+    },
+    {
+      "alternative_id": "A040",
+      "incoming": 18,
+      "outgoing": 7
+    },
+    {
+      "alternative_id": "A041",
+      "incoming": 8,
+      "outgoing": 20
+    },
+    {
+      "alternative_id": "A042",
+      "incoming": 10,
+      "outgoing": 13
+    },
+    {
+      "alternative_id": "A043",
+      "incoming": 2,
+      "outgoing": 32
+    },
+    {
+      "alternative_id": "A044",
+      "incoming": 8,
+      "outgoing": 13
+    },
+    {
+      "alternative_id": "A045",
+      "incoming": 1,
+      "outgoing": 35
+    },
+    {
+      "alternative_id": "A046",
+      "incoming": 4,
+      "outgoing": 26
+    },
+    {
+      "alternative_id": "A047",
+      "incoming": 12,
+      "outgoing": 11
+    },
+    {
+      "alternative_id": "A048",
+      "incoming": 16,
+      "outgoing": 8
+    },
+    {
+      "alternative_id": "A049",
+      "incoming": 21,
+      "outgoing": 4
+    },
+    {
+      "alternative_id": "A050",
+      "incoming": 20,
+      "outgoing": 3
+    },
+    {
+      "alternative_id": "A051",
+      "incoming": 9,
+      "outgoing": 9
+    },
+    {
+      "alternative_id": "A052",
+      "incoming": 7,
+      "outgoing": 21
+    },
+    {
+      "alternative_id": "A053",
+      "incoming": 15,
+      "outgoing": 10
+    },
+    {
+      "alternative_id": "A054",
+      "incoming": 23,
+      "outgoing": 4
+    },
+    {
+      "alternative_id": "A055",
+      "incoming": 8,
+      "outgoing": 10
+    },
+    {
+      "alternative_id": "A056",
+      "incoming": 5,
+      "outgoing": 10
+    },
+    {
+      "alternative_id": "A057",
+      "incoming": 17,
+      "outgoing": 8
+    },
+    {
+      "alternative_id": "A058",
+      "incoming": 24,
+      "outgoing": 5
+    },
+    {
+      "alternative_id": "A059",
+      "incoming": 10,
+      "outgoing": 2
+    },
+    {
+      "alternative_id": "A060",
+      "incoming": 9,
+      "outgoing": 11
+    },
+    {
+      "alternative_id": "A061",
+      "incoming": 16,
+      "outgoing": 10
+    },
+    {
+      "alternative_id": "A062",
+      "incoming": 8,
+      "outgoing": 15
+    },
+    {
+      "alternative_id": "A063",
+      "incoming": 18,
+      "outgoing": 9
+    },
+    {
+      "alternative_id": "A064",
+      "incoming": 11,
+      "outgoing": 5
+    },
+    {
+      "alternative_id": "A065",
+      "incoming": 14,
+      "outgoing": 3
+    },
+    {
+      "alternative_id": "A066",
+      "incoming": 4,
+      "outgoing": 21
+    },
+    {
+      "alternative_id": "A067",
+      "incoming": 12,
+      "outgoing": 8
+    },
+    {
+      "alternative_id": "A068",
+      "incoming": 10,
+      "outgoing": 9
+    },
+    {
+      "alternative_id": "A069",
+      "incoming": 9,
+      "outgoing": 12
+    },
+    {
+      "alternative_id": "A070",
+      "incoming": 18,
+      "outgoing": 2
+    },
+    {
+      "alternative_id": "A071",
+      "incoming": 20,
+      "outgoing": 1
+    },
+    {
+      "alternative_id": "A072",
+      "incoming": 2,
+      "outgoing": 21
+    },
+    {
+      "alternative_id": "A073",
+      "incoming": 1,
+      "outgoing": 18
+    },
+    {
+      "alternative_id": "A074",
+      "incoming": 11,
+      "outgoing": 13
+    },
+    {
+      "alternative_id": "A075",
+      "incoming": 8,
+      "outgoing": 16
+    },
+    {
+      "alternative_id": "A076",
+      "incoming": 6,
+      "outgoing": 17
+    },
+    {
+      "alternative_id": "A077",
+      "incoming": 26,
+      "outgoing": 0
+    },
+    {
+      "alternative_id": "A078",
+      "incoming": 20,
+      "outgoing": 3
+    },
+    {
+      "alternative_id": "A079",
+      "incoming": 26,
+      "outgoing": 2
+    },
+    {
+      "alternative_id": "A080",
+      "incoming": 17,
+      "outgoing": 4
+    },
+    {
+      "alternative_id": "A081",
+      "incoming": 20,
+      "outgoing": 2
+    },
+    {
+      "alternative_id": "A082",
+      "incoming": 6,
+      "outgoing": 9
+    },
+    {
+      "alternative_id": "A083",
+      "incoming": 20,
+      "outgoing": 1
+    },
+    {
+      "alternative_id": "A084",
+      "incoming": 10,
+      "outgoing": 7
+    },
+    {
+      "alternative_id": "A085",
+      "incoming": 14,
+      "outgoing": 3
+    },
+    {
+      "alternative_id": "A086",
+      "incoming": 13,
+      "outgoing": 4
+    },
+    {
+      "alternative_id": "A087",
+      "incoming": 8,
+      "outgoing": 5
+    },
+    {
+      "alternative_id": "A088",
+      "incoming": 19,
+      "outgoing": 1
+    },
+    {
+      "alternative_id": "A089",
+      "incoming": 11,
+      "outgoing": 2
+    },
+    {
+      "alternative_id": "A090",
+      "incoming": 33,
+      "outgoing": 1
+    },
+    {
+      "alternative_id": "A091",
+      "incoming": 40,
+      "outgoing": 0
+    }
+  ],
+  "graph_acyclic": true,
+  "choice_kernel": [
+    "A001",
+    "A002",
+    "A014",
+    "A016",
+    "A020",
+    "A034",
+    "A060",
+    "A062",
+    "A066"
+  ],
+  "cyclic_residue": [],
+  "kernel_waves": [
+    {
+      "source_ids": [
+        "A001",
+        "A002",
+        "A014",
+        "A016",
+        "A020",
+        "A034"
+      ],
+      "removed_count": 68
+    },
+    {
+      "source_ids": [
+        "A060",
+        "A062",
+        "A066"
+      ],
+      "removed_count": 23
+    }
+  ],
+  "caveat": "O núcleo é uma seleção de escolha, não um ranking nem uma prova de ótima solução. Se o grafo tiver ciclos, este procedimento não declara núcleo e exige tratamento explícito.",
+  "scenario_status": "EXPLORATORIO_PENDENTE_DE_APROVACAO",
+  "input_sha256": {
+    "matrix": "6ea5e4b5738688404a9410f33f7e4b49eb8d6e27af5d6bf818e6c17d993cc56d",
+    "weights": "09cd85104da2c86a4bd29f817f89a3e90bb075f2878688ea0dbc8b851f792da2",
+    "parameters": "3652f272d1e6b0cb3ab046299a46d6b8e4ddf27905a2a7658d9a62334fe7e5ad"
+  },
+  "preference_rationale": {
+    "concordance": "Com os pesos da D024, custo isolado tem 0,6474, custo mais um criterio quimico 0,7256, custo mais homogeneidade 0,8436 e custo mais ambos quimicos 0,8038. O limiar 0,80 impede apoio somente no custo, mas ainda permite coligacoes envolvendo homogeneidade ou ambos desvios.",
+    "veto": "Como os quatro criterios possuem unidades distintas, o veto exploratorio corresponde a 40% da amplitude observada de cada criterio na matriz D023; exige justificativa e analise de sensibilidade antes da consolidacao.",
+    "tradeoff": "O custo concentra mais da metade do peso AHP. Portanto, qualquer concordancia acima de 0,5 exige que custo de a seja menor ou igual ao de b para aSb; esse vies e uma consequencia dos julgamentos do grupo, nao um defeito no ELECTRE."
+  }
+}

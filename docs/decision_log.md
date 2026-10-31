@@ -831,3 +831,138 @@ Para os julgamentos registrados: \(\lambda_{\max}\approx4{,}073467\); \(CI\appro
 **Reprodutibilidade:** `data/preferencias_ahp.json`, `src/cassotis_optimization/mcda/ahp.py` e `scripts/calculate_ahp_weights.py`. Saída calculada: `results/mcda/pesos_ahp.json`. Testes: `tests/test_ahp.py` (incluem reconstrução da matriz, reciprocidade, pesos, CR e rejeição de registros incompletos/duplicados). O script verifica também as amplitudes da matriz oficial da D023 antes de exportar os pesos.
 
 **Consequências:** reutilizar esse mesmo vetor-base em ELECTRE e PROMETHEE, cujos limiares e funções de preferência serão decididos posteriormente. Realizar análise de sensibilidade aumentando a importância relativa dos desvios químicos e modificando parâmetros de decisão. Não modificar a matriz original de 91 alternativas nem reexecutar a GVNS para esta etapa.
+
+---
+
+## D025 — ELECTRE I: sobreclassificação, vetos e núcleo de escolha
+
+**Status: PROPOSTA EXPLORATÓRIA — limiares pendentes de aprovação pelo grupo.**
+
+**Base das alternativas:** `results/mcda/matriz_decisao.csv` (91 alternativas, D023),
+sem reexecutar a GVNS. Os quatro critérios são minimizados: custo \(f_1\),
+desvios quadráticos de SiO₂ \(f_2\), de Al₂O₃ \(f_3\) e heterogeneidade
+operacional \(C_4\).
+
+**Pesos fixos de referência (D024):**
+
+\[
+w=(0{,}6474358974;\;0{,}0782051282;\;0{,}0782051282;\;0{,}1961538462).
+\]
+
+Esses pesos decorrem dos seis julgamentos AHP fornecidos pelo grupo e
+reproduzidos por `src/cassotis_optimization/mcda/ahp.py`. Não são
+preferências verificadas de uma empresa.
+
+### Variante e significado
+
+Adota-se **ELECTRE I**, para formular um *problema de escolha* (recomendar um
+subconjunto, não gerar uma ordenação total). Para as alternativas \(a,b\),
+definir concordância ponderada
+
+\[
+C(a,b)=\sum_{j\colon f_j(a)\le f_j(b)}w_j.
+\]
+
+Um critério apoia a afirmação “\(a\) é pelo menos tão boa quanto \(b\)” quando
+seu valor em \(a\) é **menor ou igual** ao de \(b\). Essa comparação é realizada
+nos valores originais (não somamos as unidades distintas).
+
+Como teste de discordância, para cada critério calcular a amplitude observada
+na matriz D023, \(\Delta_j=\max f_j-\min f_j\). Um veto em \(j\) ocorre quando
+
+\[
+f_j(a)-f_j(b)>v_j\Delta_j.
+\]
+
+A relação de sobreclassificação é estabelecida quando
+
+\[
+aSb\;\Longleftrightarrow\; C(a,b)\ge\lambda
+\;\land\; \forall j:\, f_j(a)-f_j(b)\le v_j\Delta_j.
+\]
+
+### Limiares **propostos**, não aprovados
+
+- **Concordância:** \(\lambda=0{,}80\).
+- **Veto relativo:** \(v_j=0{,}40\) para cada um dos quatro critérios;
+  esse número é uma fração da amplitude **observada**, e não uma porcentagem
+  física do critério.
+- **Indiferença no nível de critério:** adota-se igualdade numérica exata,
+  sem limiares \(q\) e \(p\), por se tratar da variante ELECTRE I, e não III/IS.
+
+Limiar de concordância 0,80 foi proposto para impedir que o **custo isolado**
+(0,6474 de peso AHP) baste para sobreclassificar qualquer alternativa. Nesse
+cenário, custo + homogeneidade somam 0,8436; custo + ambos os desvios químicos
+somam 0,8038; custo + apenas um desvio soma 0,7256. Portanto,
+o apoio ao custo precisa ser acompanhado por critérios adicionais.
+
+Os vetos de 40% da amplitude observada têm a intenção de bloquear
+compensações grandes em um único critério. **Essa fração é uma hipótese de
+preferência do grupo e precisa ser discutida**, porque os julgamentos AHP não
+determinam veto nem concordância. Não foi inferida de preferências declaradas
+pela professora ou pela Cassotis.
+
+**Consequência estrutural importante:** como o peso do custo é maior que 0,5,
+nenhuma alternativa de custo mais elevado pode sobreclassificar uma alternativa
+mais barata para qualquer limiar maior que 0,5 neste modelo. Mesmo que a
+alternativa mais cara seja melhor nos outros três critérios, o máximo de
+concordância sem apoio do custo seria 0,3526. Trata-se de uma consequência
+das preferências registradas na D024, relevante para a sensibilidade posterior.
+
+### Incomparabilidade e núcleo
+
+Para cada par não ordenado, preservar os dois sentidos \(aSb\) e \(bSa\).
+Se nenhum sentido ocorrer, registrar **incomparabilidade**; se ocorrerem
+ambos, registrar **sobreclassificação mútua**, sem chamar isso de indiferença
+estrita. A relação pode não ser transitiva e pode conter ciclos.
+
+O **núcleo de escolha** requer (i) nenhuma sobreclassificação entre
+seus integrantes (independência interna) e (ii) que cada alternativa externa
+seja sobreclassificada por pelo menos um integrante (cobertura externa).
+A implementação extrai esse núcleo pela seleção recursiva de fontes do grafo
+**quando o grafo é acíclico**. Na presença de ciclos residuais, sinaliza a
+impossibilidade de usar essa extração simples, em vez de apresentar um falso
+núcleo. O núcleo não é um ranking nem afirma ótimo global.
+
+### Diagnóstico preliminar com as 91 alternativas oficiais
+
+Com os parâmetros **ainda exploratórios** descritos acima, o diagnóstico
+independente sobre a matriz D023 encontrou:
+
+- 4.095 pares distintos de alternativas;
+- 902 pares com sobreclassificação em exatamente um sentido;
+- 3.193 pares incomparáveis;
+- 6 alternativas sem nenhuma sobreclassificação recebida;
+- grafo sem ciclos e **9 alternativas no núcleo de escolha**:
+  `A001`, `A002`, `A014`, `A016`, `A020`, `A034`, `A060`, `A062`, `A066`.
+
+Esses números descrevem a resposta do método às preferências **supostas**:
+não devem ser usados para ajustar silenciosamente os limiares após observar
+quem é selecionado. Os dados de origem continuam intactos.
+
+### Alternativas e validações posteriores
+
+Foram consideradas as variantes ELECTRE III/IS (com limiares de indiferença e
+preferência mais numerosos) e métodos de ordenação ELECTRE II. Preferiu-se
+inicialmente ELECTRE I por corresponder diretamente à questão de **seleção**
+e representar explicitamente discordância e incomparabilidade com poucos
+parâmetros auditáveis. A comparação com PROMETHEE será documentada depois,
+sem alterar a matriz D023 nem os pesos AHP oficiais.
+
+A consolidação dependerá da aprovação dos limiares pelo grupo e de análise
+de sensibilidade. No mínimo, comparar a concordância \(\lambda\) em torno de
+0,75/0,80/0,85 e veto relativo em 0,25/0,40/0,50, mostrando como isso altera
+o conjunto de escolha. A alteração do limiar de concordância pode ter efeito
+*discreto* por causa dos poucos valores possíveis de soma dos pesos.
+
+**Implementação proposta:** `src/cassotis_optimization/mcda/electre.py`,
+`scripts/run_electre.py`, `data/parametros_electre.json` e
+`tests/test_electre.py`. Saídas geradas no checkout oficial:
+`results/mcda/electre_i_resumo.json` e
+`results/mcda/electre_i_relacoes.csv`.
+
+**Fontes conceituais:** Bernard Roy, ELECTRE I (método de escolha e núcleo);
+revisão *Fifty years of multiple criteria decision analysis*,
+European Journal of Operational Research (2025), DOI
+`10.1016/j.ejor.2024.07.038`. Os valores específicos de \(\lambda\) e \(v_j\)
+são **decisões propostas pelo grupo**, não extraídos dessas fontes.
