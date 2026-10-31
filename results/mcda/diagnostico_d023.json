@@ -1,0 +1,58 @@
+{
+  "status": "D023_MATRIZ_GERADA",
+  "source": "pareto_joint.csv e runs/<run_id>.json",
+  "pareto_sha256": "40c7673fc3f6dcf5feea16130607ae644f8eec5b210f0ca48570830667fdeadb",
+  "alternative_count": 91,
+  "origin_run_count": 95,
+  "minimize": [
+    "f1",
+    "f2",
+    "f3",
+    "c4"
+  ],
+  "criterion_c4": {
+    "definition": "distancia_variacao_total_media_receitas_ao_grupo",
+    "unit": "adimensional_entre_0_e_1",
+    "interpretation": "heterogeneidade das proporções de minério entre pilhas do mesmo grupo de sinter; menor valor significa maior homogeneização",
+    "min": 0.282871132565405,
+    "max": 0.48012820555777214,
+    "mean": 0.37270352123182726,
+    "sample_std": 0.04211661595741142,
+    "distinct_values": 91
+  },
+  "correlation_spearman": {
+    "f1": 0.32761882532291875,
+    "f2": -0.18225832138875617,
+    "f3": -0.263640707118968
+  },
+  "pairwise_conflict": {
+    "f1": {
+      "informative_pairs": 4064,
+      "opposed_pairs": 1585,
+      "opposed_fraction": 0.390009842519685
+    },
+    "f2": {
+      "informative_pairs": 4095,
+      "opposed_pairs": 2284,
+      "opposed_fraction": 0.5577533577533578
+    },
+    "f3": {
+      "informative_pairs": 4095,
+      "opposed_pairs": 2399,
+      "opposed_fraction": 0.5858363858363859
+    }
+  },
+  "minimum_c4_alternatives": [
+    "A034"
+  ],
+  "origin_methods": {
+    "epsilon_restricted": 47,
+    "weighted_sum": 44
+  },
+  "notes": [
+    "A correlação não demonstra causalidade.",
+    "C4 compara proporções de minérios, não apenas o número de tipos diferentes.",
+    "A receita de referência de cada grupo é ponderada por caminhões; as pilhas têm peso igual na média das distâncias.",
+    "Os pesos e as funções de preferência serão definidos em D024."
+  ]
+}

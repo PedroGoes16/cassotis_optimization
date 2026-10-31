@@ -706,3 +706,51 @@ results/multi_smoke100k e results/multi_smoke200k.
 
 **Validação:** `tests/test_pareto_multiobjetivo.py`, `tests/test_planejamento_multiobjetivo.py`, `tests/test_multiobjective_gvns.py` e execução exploratória da D021.
 
+---
+
+## D023 — Conjunto de alternativas e quarto critério de decisão
+
+**Status:** CONFIRMADA (pendente conferência dos 91 registros oficiais antes de consolidar)
+
+**Decisão:** utilizar, como conjunto inicial de alternativas da Entrega 3, as 91 soluções não dominadas em três objetivos armazenadas em `results/multi_final/pareto_joint.csv`, com as composições extraídas dos arquivos `results/multi_final/runs/<run_id>.json`. Não reexecutar a GVNS e não filtrar a frente separadamente em duas dimensões.
+
+**Critérios de decisão, todos de minimização:**
+
+1. \(C_1=f_1\), custo total em reais;
+2. \(C_2=f_2\), soma dos desvios quadráticos dos teores de SiO₂ em relação aos alvos;
+3. \(C_3=f_3\), soma dos desvios quadráticos dos teores de Al₂O₃ em relação aos alvos;
+4. \(C_4\), heterogeneidade das receitas de minério **entre pilhas de um mesmo equipamento**.
+
+**Definição do quarto critério:** seja \(x_{ip}\) a quantidade de caminhões do minério \(i\) na pilha \(p\), \(n_p=\sum_i x_{ip}\) a quantidade total de caminhões da pilha e \(g(p)\) seu equipamento. A proporção do minério \(i\) na receita da pilha é
+
+\[
+r_{ip}=\frac{x_{ip}}{n_p}.
+\]
+
+A receita agregada de referência de cada equipamento \(g\) é ponderada pela quantidade de caminhões das suas pilhas:
+
+\[
+R_{ig}=\frac{\sum_{p\in P_g}x_{ip}}{\sum_{p\in P_g}n_p}.
+\]
+
+Definir o atributo operacional como a média das distâncias de variação total entre cada receita e a receita de seu equipamento:
+
+\[
+\boxed{C_4(X)=\frac{1}{|P|}\sum_{p\in P}\frac12\sum_{i\in I}\left|r_{ip}-R_{i,g(p)}\right|.}
+\]
+
+Assim, \(0\le C_4\le 1\), e \(C_4=0\) significa que as pilhas de cada equipamento seguem a mesma receita **em proporções**, embora possam ter massas absolutas diferentes. Valores maiores significam maior heterogeneidade.
+
+**Fundamentação:** a homogeneização de receitas é explicitamente sugerida no enunciado da professora para simplificar manuseio e planejamento das pilhas de um mesmo equipamento. O atributo depende da alocação detalhada de minérios, não de custo nem de indicadores químicos, e é distinto de contar apenas quantos tipos de minérios aparecem em cada pilha. Sua relação de conflito com os outros objetivos será verificada empiricamente na matriz oficial.
+
+**Alternativas consideradas:** número de tipos distintos por pilha (proxy de complexidade, mas insuficiente para identificar diferenças de proporção entre receitas); diferença quadrática entre receitas; distância total entre todas as duplas de pilhas. Preferiu-se a distância de variação total até a receita média de cada grupo por ser adimensional, limitada, direta e interpretável.
+
+**Rastreabilidade e tratamento de empates:** cada linha da matriz conserva `source_run_ids`, identifica uma execução representativa e associa um hash à composição. Vetores de objetivos idênticos **não devem** ser fundidos se corresponderem a composições distintas; nesse caso, o script interrompe a geração e exige decisão explícita. Nos quatro empates de origem identificados na Entrega 2, as composições foram anteriormente conferidas como idênticas.
+
+**Consequências:** as 91 alternativas eram não dominadas no espaço \((f_1,f_2,f_3)\); acrescentar um critério não deve excluir alternativas sem uma justificativa MCDA explícita. A escala do quarto atributo não define seu peso de preferência, que será estabelecido em D024. Não se interpreta \(C_4\) como custo real de manuseio, e sua menor magnitude numérica não deve implicar menor importância.
+
+**Implementação:** `scripts/build_mcda_matrix.py`.
+
+**Saídas:** `results/mcda/matriz_decisao.csv` e `results/mcda/diagnostico_d023.json`.
+
+**Validação:** `tests/test_build_mcda_matrix.py`, comparação dos valores de objetivos e factibilidade dos JSON com o CSV, verificação das massas/pilhas e verificação dos conflitos par-a-par. A medição completa e a consolidação dependem da execução no checkout oficial com as 91 alternativas.
