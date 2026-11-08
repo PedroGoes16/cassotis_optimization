@@ -20,7 +20,8 @@ dev = [
     "ruff>=0.6",
 ]
 app = [
-    "streamlit>=1.35",
+    "streamlit>=1.67",
+    "uvicorn>=0.52",
 ]
 
 [tool.setuptools.packages.find]

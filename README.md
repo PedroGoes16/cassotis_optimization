@@ -10,6 +10,8 @@ Entrega 1: formulação, GVNS, calibração e 15 execuções finais implementada
 
 Entrega 2: normalização, Soma Ponderada, ε-restrito, filtro de Pareto e executor implementados. A rodada oficial em `results/multi_final/` reúne 160 execuções: 16 configurações por método, cinco seeds por configuração, 200.000 avaliações por execução. O protocolo foi congelado antes da rodada (D021). As frentes são aproximações e não certificados de ótimo global.
 
+Entrega 3: PROMETHEE II, ELECTRE III, heterogeneidade das receitas, tratamento de incomparabilidade e análise de sensibilidade implementados. A análise oficial em `results/decision_final/` compara 91 composições e recomenda a alternativa A073 no cenário-base (D023–D025).
+
 Consolidados:
 
 - variável de decisão em número de caminhões (2 kt cada);
@@ -30,7 +32,7 @@ Configuração final: orçamento de 200 mil avaliações, amostra 250, SHAKE 3/4
 
 As decisões da GVNS estão explicadas em linguagem direta em [`docs/gvns_decisoes.md`](docs/gvns_decisoes.md). O registro formal está em [`docs/decision_log.md`](docs/decision_log.md).
 
-Pendentes: revisão e submissão da Entrega 2; métodos de decisão multicritério, atributo adicional, Streamlit e relatório final da Entrega 3. Não há apresentação oral na Entrega 2.
+Pendente apenas a revisão final do grupo e a submissão. O relatório cumulativo, a aplicação Streamlit e a apresentação final de até 10 minutos estão implementados.
 
 ## Fonte do problema
 
@@ -57,6 +59,7 @@ Há também uma clarificação da professora sobre disponibilidade: os limites m
 │   ├── objectives.py             # seleção de f1/f2/f3
 │   ├── feasibility.py            # violação normalizada e regra de viabilidade
 │   ├── visualization.py          # figuras (convergência, solução)
+│   ├── decision/                 # critérios, PROMETHEE II e ELECTRE III
 │   └── algorithms/
 │       ├── constructive.py       # heurística construtiva
 │       ├── vizinhancas.py        # N1, N2, N3 (enumeração e amostragem uniforme)
@@ -67,9 +70,11 @@ Há também uma clarificação da professora sobre disponibilidade: os limites m
 │   ├── validate_instance.py
 │   ├── run_mono_experiments.py   # 5 execuções × f1/f2/f3, tabelas e figuras
 │   ├── run_multi_experiments.py  # protocolo multiobjetivo e figuras
+│   ├── run_decision_analysis.py  # decisão multicritério e sensibilidade
 │   └── validate_multi_results.py # auditoria dos resultados multiobjetivo
 ├── tests/
 ├── app/                          # Streamlit (Entrega 3)
+├── presentation/                 # apresentação final em PowerPoint
 ├── notebooks/
 └── results/                      # saídas geradas pelos scripts
 ```
@@ -131,6 +136,31 @@ Consulte [`docs/entrega2_experimentos.md`](docs/entrega2_experimentos.md) para i
 ## Relatório cumulativo
 
 O código-fonte é `report/main.tex` e o PDF compilado é `report/main.pdf`. Para compilar novamente, instale uma distribuição TeX com os pacotes usados pelo documento e execute, dentro de `report/`, `tectonic main.tex` ou `pdflatex main.tex` duas vezes. As figuras mono-objetivo estão em `report/figures/`; as multiobjetivo são lidas de `results/multi_final/`, portanto mantenha essa estrutura de pastas.
+
+## Análise multicritério da Entrega 3
+
+```powershell
+python scripts/run_decision_analysis.py
+```
+
+O protocolo está em `data/protocolo_entrega3.json`. A execução reavalia as composições oficiais, calcula o quarto critério, gera os rankings PROMETHEE II e ELECTRE III, executa 15 cenários de sensibilidade e salva tabelas, projeções e a solução recomendada em `results/decision_final/`.
+
+## Aplicação Streamlit
+
+```powershell
+pip install -e ".[app]"
+streamlit run app/app.py
+```
+
+A aplicação apresenta as alternativas não dominadas, comparação normalizada, rankings, incomparabilidades, sensibilidade e a composição final. Consulte `app/README.md` para detalhes.
+
+## Apresentação final
+
+O arquivo editável final é `presentation/entrega3_apresentacao_padrao_entrega1.pptx`, com 9 slides, notas do apresentador e o mesmo sistema visual da apresentação da Entrega 1. A sequência reserva aproximadamente 2 minutos para demonstrar a aplicação Streamlit e permanece dentro do limite total de 10 minutos. Para reconstruir o arquivo no Windows com Microsoft PowerPoint instalado:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build_presentation.ps1
+```
 
 ## Regra de desenvolvimento
 

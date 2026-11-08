@@ -58,16 +58,16 @@
 
 ## Entrega 3 — decisão multicritério
 
-- [ ] escolher 2 entre AHP, ELECTRE e PROMETHEE
-- [ ] definir pelo menos 4 critérios
-- [ ] incluir f1, f2 e f3
-- [ ] definir pelo menos um atributo adicional conflitante
-- [ ] justificar pesos e parâmetros
-- [ ] tratar incomparabilidade, se ocorrer
-- [ ] análise de sensibilidade
-- [ ] tabela de alternativas e critérios
-- [ ] destacar escolhas nas projeções
-- [ ] visualizar solução final
-- [ ] Streamlit
-- [ ] relatório final cumulativo
-- [ ] apresentação final de até 10 minutos
+- [x] escolher 2 entre AHP, ELECTRE e PROMETHEE (PROMETHEE II e ELECTRE III, D023)
+- [x] definir pelo menos 4 critérios
+- [x] incluir f1, f2 e f3
+- [x] definir pelo menos um atributo adicional conflitante (heterogeneidade das receitas, D024)
+- [x] justificar pesos e parâmetros (D025)
+- [x] tratar incomparabilidade, se ocorrer
+- [x] análise de sensibilidade
+- [x] tabela de alternativas e critérios (`results/decision_final/alternatives.csv`)
+- [x] destacar escolhas nas projeções
+- [x] visualizar solução final
+- [x] Streamlit (`app/app.py`)
+- [x] relatório final cumulativo (`report/main.tex` e `report/main.pdf`)
+- [x] apresentação final de até 10 minutos (`presentation/entrega3_apresentacao_padrao_entrega1.pptx`)

@@ -64,4 +64,8 @@ O protocolo D021 está consolidado em `data/protocolo_entrega2.json`: 16 configu
 
 ## Entrega 3
 
-Os métodos multicritério e a análise de sensibilidade terão protocolo próprio. Nenhum peso de decisão deve ser escolhido silenciosamente ou apresentado como consequência da otimização.
+O protocolo multicritério foi consolidado em `data/protocolo_entrega3.json` e nas decisões D023–D025. São utilizados PROMETHEE II e ELECTRE III sobre as composições conjuntamente não dominadas da Entrega 2, com quatro critérios: f1, f2, f3 e heterogeneidade das receitas.
+
+O cenário-base usa pesos iguais e limiares normalizados q=0,05, p=0,20 e veto=0,60. A análise de sensibilidade contém cinco perfis de peso e três escalas de limiares, totalizando 15 cenários por método. Pesos e limiares são decisões do grupo, não consequências da otimização nem preferências confirmadas pela professora.
+
+Os resultados reproduzíveis são gerados por `scripts/run_decision_analysis.py` em `results/decision_final/`.

@@ -1,0 +1,16 @@
+weight_profile,threshold_scale,promethee_winner,electre_choice,electre_maximal_count,electre_incomparable_pairs,electre_choice_promethee_rank,electre_choice_display_rank
+equal,0.8,A073,A073,8,2208,1,5
+equal,1.0,A073,A073,9,1695,1,3
+equal,1.2,A073,A073,5,1293,1,1
+priority_f1,0.8,A020,A020,11,2769,1,34
+priority_f1,1.0,A020,A020,8,2293,1,27
+priority_f1,1.2,A020,A020,13,1915,1,25
+priority_f2,0.8,A073,A073,8,2146,1,6
+priority_f2,1.0,A073,A045,6,1606,2,1
+priority_f2,1.2,A073,A066,6,1177,5,2
+priority_f3,0.8,A073,A073,11,2423,1,2
+priority_f3,1.0,A073,A073,11,2026,1,1
+priority_f3,1.2,A073,A073,8,1607,1,1
+priority_heterogeneity,0.8,A073,A073,7,2073,1,3
+priority_heterogeneity,1.0,A073,A073,5,1515,1,3
+priority_heterogeneity,1.2,A073,A073,5,1112,1,1

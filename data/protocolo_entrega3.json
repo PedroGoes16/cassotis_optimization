@@ -1,0 +1,29 @@
+{
+  "status": "CONSOLIDADO",
+  "alternative_source": "results/multi_final/pareto_joint.csv",
+  "criteria": [
+    {"id": "f1", "name": "Custo total", "direction": "min"},
+    {"id": "f2", "name": "Desvio quadrático de SiO2", "direction": "min"},
+    {"id": "f3", "name": "Desvio quadrático de Al2O3", "direction": "min"},
+    {"id": "heterogeneity", "name": "Heterogeneidade das receitas", "direction": "min"}
+  ],
+  "methods": ["promethee_ii", "electre_iii"],
+  "normalization": "minmax_on_candidate_set",
+  "baseline": {
+    "weights": {"f1": 0.25, "f2": 0.25, "f3": 0.25, "heterogeneity": 0.25},
+    "q": 0.05,
+    "p": 0.20,
+    "veto": 0.60,
+    "electre_credibility_cutoff": 0.65
+  },
+  "sensitivity": {
+    "priority_weight": 0.40,
+    "other_weights": 0.20,
+    "threshold_scales": [0.8, 1.0, 1.2]
+  },
+  "tie_break": [
+    "highest_promethee_net_flow",
+    "smallest_normalized_chebyshev_distance_to_ideal",
+    "alternative_id"
+  ]
+}

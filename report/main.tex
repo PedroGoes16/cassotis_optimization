@@ -16,6 +16,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage{listings}
@@ -44,20 +45,20 @@
 }
 
 \title{\LARGE \textbf{Otimização do Custo e da Qualidade de Pilhas de Minério por GVNS}\\[0.3em]
-\large Entrega 2 -- Versões Mono-objetivo e Multiobjetivo}
+\large Entrega 3 -- Relatório Final Cumulativo}
 \author{\textbf{Universidade Federal de Minas Gerais -- Teoria da Decisão -- 2026/2}\\[0.2em]
 \small Allan Melquíades, Diogo Muzzi, Gabriel Ramos, Pedro Goes, Pedro Vieira, Vitor Hugo Lacerda Lana}
-\date{18 de outubro de 2026}
+\date{8 de novembro de 2026}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-\noindent Este trabalho apresenta uma metaheurística \textit{General Variable Neighborhood Search} (GVNS) para compor dez pilhas de minério, com restrições de massa, elegibilidade, disponibilidade global e qualidade química. As versões mono-objetivo minimizam separadamente custo e desvios quadráticos de $\text{SiO}_2$ e $\text{Al}_2\text{O}_3$. Suas melhores soluções factíveis fornecem referências para normalizar os objetivos antes de aplicar Soma Ponderada e $\varepsilon$-restrito. Na etapa multiobjetivo, foram avaliadas 16 configurações por abordagem, cinco sementes por configuração e 200.000 avaliações por execução. As 160 execuções oficiais terminaram factíveis em seus respectivos problemas escalares. As aproximações não dominadas contêm 45 vetores distintos para Soma Ponderada e 49 para $\varepsilon$-restrito. Os resultados mostram compromissos entre custo e qualidade, cobertura distinta entre as grades e variação entre sementes; não há certificado de otimalidade global.
+\noindent Este trabalho apresenta uma metaheurística \textit{General Variable Neighborhood Search} (GVNS) para compor dez pilhas de minério, com restrições de massa, elegibilidade, disponibilidade global e qualidade química. As versões mono-objetivo minimizam separadamente custo e desvios quadráticos de $\text{SiO}_2$ e $\text{Al}_2\text{O}_3$. Suas melhores soluções factíveis fornecem referências para normalizar os objetivos antes de aplicar Soma Ponderada e $\varepsilon$-restrito. Na etapa multiobjetivo, 160 execuções oficiais produziram 91 composições conjuntamente não dominadas distintas. A tomada de decisão utiliza PROMETHEE II e ELECTRE III com os três objetivos e um quarto critério de heterogeneidade das receitas. Com pesos iguais, ambos os procedimentos recomendam a alternativa A073, de custo R\$ 63,74 milhões, $f_2=3{,}3973$, $f_3=2{,}6966$ e heterogeneidade 0,042526. Em 15 cenários de sensibilidade, A073 venceu 12 vezes no PROMETHEE e 10 no ELECTRE. Uma aplicação Streamlit permite explorar as frentes, comparar alternativas, consultar rankings e inspecionar a composição final. Os resultados são aproximações heurísticas, sem certificado de otimalidade global.
 
 \vspace{0.3em}
-\noindent\textbf{Palavras-chave} -- GVNS; VND; otimização combinatória; mistura de minérios; restrições; metaheurísticas.
+\noindent\textbf{Palavras-chave} -- GVNS; otimização multiobjetivo; PROMETHEE; ELECTRE; decisão multicritério; mistura de minérios.
 \end{abstract}
 
 \section{Introdução}
@@ -67,6 +68,8 @@ O problema estudado consiste em definir a composição de dez pilhas de minério
 A Entrega 1 exige a solução separada das três versões mono-objetivo por um método estocástico baseado em VNS/GVNS, cinco execuções por objetivo, estatísticas de mínimo, desvio-padrão e máximo, curvas de convergência e representação da melhor solução. Além do desempenho final, o enunciado requer que decisões não especificadas -- terceira vizinhança, perturbação, tratamento de inviabilidade, organização da busca local, aceitação e parada -- sejam explicitadas e justificadas \cite{case_enunciado}.
 
 Na Entrega 2, os objetivos são normalizados a partir das execuções mono-objetivo e tratados conjuntamente por Soma Ponderada e $\varepsilon$-restrito.
+
+Na Entrega 3, as soluções não dominadas tornam-se alternativas de decisão. Dois métodos de sobreclassificação, PROMETHEE II e ELECTRE III, consideram os três objetivos e a homogeneidade operacional das receitas. A análise explicita pesos, limiares, incomparabilidades e sensibilidade antes de recomendar uma composição final. Os resultados são disponibilizados também em uma aplicação Streamlit.
 
 O desenvolvimento foi conduzido incrementalmente. Primeiro foram consolidadas a formulação e a representação; em seguida, as vizinhanças e o tratamento de inviabilidade; por fim, a GVNS, os testes, a calibração e as execuções finais. O código e os resultados são versionados no repositório do projeto \cite{repo_projeto}.
 
@@ -141,13 +144,13 @@ Cada solução é armazenada como um vetor de identificadores de minério para c
 
 A matriz de contagens $x_{ip}$ é derivada da composição. Uma única rotina de avaliação calcula simultaneamente custo, $f_2$, $f_3$, qualidades, uso global e violações. O objetivo ativo é apenas selecionado posteriormente, evitando fórmulas duplicadas e facilitando o reaproveitamento na Entrega 2.
 
-A heurística construtiva segue a sugestão do enunciado (D013). Primeiro satisfaz os mínimos globais de disponibilidade, sempre em pilhas elegíveis; depois preenche os slots restantes com os minérios elegíveis de menor custo ainda abaixo do máximo global. A construtiva é determinística e preserva massa, elegibilidade e disponibilidade, mas não força os limites de $\text{SiO}_2$ e $\text{Al}_2\text{O}_3$. Na instância estudada, a solução inicial custa R\$ 59,34 milhões, possui $f_2 = 14,90$, $f_3 = 7,00$ e é inviável em qualidade.
+A heurística construtiva segue a sugestão do enunciado (D013). Primeiro satisfaz os mínimos globais de disponibilidade, sempre em pilhas elegíveis; depois preenche as posições restantes de caminhão com os minérios elegíveis de menor custo ainda abaixo do máximo global. A construtiva é determinística, isto é, produz a mesma solução sempre que recebe a mesma instância. Ela preserva massa, elegibilidade e disponibilidade, mas não força os limites de $\text{SiO}_2$ e $\text{Al}_2\text{O}_3$. Na instância estudada, a solução inicial custa R\$ 59,34 milhões, possui $f_2 = 14,90$, $f_3 = 7,00$ e é inviável em qualidade.
 
 \section{Tratamento de inviabilidade}
 
 Uma solução é factível quando atende a todas as restrições; caso contrário, é inviável. Foi adotada uma regra de viabilidade em vez de penalização com coeficiente $\lambda$, reparo ou rejeição pura (D007). A comparação entre duas soluções segue três regras: (i) factível vence inviável; (ii) entre factíveis, vence o menor objetivo; (iii) entre inviáveis, vence a menor violação normalizada, usando o objetivo apenas como desempate.
 
-Para uma propriedade química $q$ com limites $L$ e $U$, a violação normalizada é proporcional à distância para a faixa admissível e nula dentro dela. Para disponibilidade, usa-se a violação do intervalo global normalizada por $\max(1, d_i^{\max})$. A medida agregada é
+Para uma propriedade química $q$ com limites $L$ e $U$, a violação é zero quando o teor está dentro da faixa. Se estiver fora, mede-se quanto falta para alcançar o limite mais próximo. Essa distância é dividida pela largura da faixa, permitindo somar violações de propriedades com escalas diferentes. Por exemplo, para uma faixa de 5,0\% a 6,0\%, um teor de 6,2\% está 0,2 ponto percentual acima do limite e gera violação normalizada de $0{,}2/(6{,}0-5{,}0)=0{,}2$. Para disponibilidade, mede-se de modo semelhante o quanto o uso global ficou abaixo do mínimo ou acima do máximo e divide-se por $\max(1,d_i^{\max})$. A medida total é
 \begin{equation}
 V(X) = \sum_{p} v_p^{Si} + \sum_{p} v_p^{Al} + \sum_{i} v_i^{\text{disp}}.
 \end{equation}
@@ -160,34 +163,40 @@ Essa regra foi escolhida por funcionar a partir de uma solução inicial inviáv
 
 A busca local procura soluções melhores por meio de alterações na solução atual. Cada alteração é um movimento e produz uma solução candidata; uma vizinhança é o conjunto de movimentos possíveis de um mesmo tipo. São utilizadas três vizinhanças complementares:
 
-\noindent\textbf{$N_1$ -- substituição.} Um minério presente em uma pilha é substituído por outro minério elegível. A massa e a elegibilidade são preservadas; o consumo global e as três funções podem mudar.
+\noindent\textbf{$N_1$ -- substituição.} Troca-se um caminhão de uma pilha por um caminhão de outro minério permitido naquela pilha. Por exemplo, uma posição com M2 pode passar a receber M5. A massa e a elegibilidade são preservadas; o consumo global e as três funções podem mudar.
 
-\noindent\textbf{$N_2$ -- troca.} Dois minérios de pilhas diferentes são permutados, desde que a elegibilidade cruzada seja satisfeita. A composição global é preservada; portanto, $f_1$ é invariável em $N_2$. Essa propriedade explica a ausência de melhorias $N_2$ nas execuções de custo após a factibilidade.
+\noindent\textbf{$N_2$ -- troca.} Dois caminhões de pilhas diferentes trocam de lugar, desde que cada minério seja permitido na pilha de destino. Por exemplo, M2 em P1 troca de lugar com M8 em P3. Como nenhum minério entra ou sai da solução, as quantidades globais e o custo permanecem iguais. A troca serve principalmente para redistribuir a qualidade entre pilhas; por isso não produz melhoria direta nas execuções que minimizam somente o custo.
 
-\noindent\textbf{$N_3$ -- realocação em cadeia.} Um movimento completo é identificado por $(p_a,p_b,m_x,m_y,m_z)$: $p_a$ e $p_b$ são pilhas diferentes; $m_x$ está em $p_a$ e $m_y$ está em $p_b$; $m_z$ é o novo minério escolhido para $p_a$. O movimento substitui um caminhão de cada pilha:
+\noindent\textbf{$N_3$ -- realocação em cadeia.} Esta vizinhança faz duas alterações ligadas. O minério retirado da primeira pilha é enviado para a segunda, e a posição aberta na primeira recebe um terceiro minério permitido. Assim, a busca consegue mudar simultaneamente a distribuição entre pilhas e a quantidade global de minérios. Na notação $(p_a,p_b,m_x,m_y,m_z)$, $p_a$ e $p_b$ são pilhas diferentes, $m_x$ está em $p_a$, $m_y$ está em $p_b$ e $m_z$ é o novo minério de $p_a$:
 \begin{equation}
 p_a : m_x \to m_z, \quad p_b : m_y \to m_x.
 \end{equation}
-Os três minérios são distintos; $m_z$ deve ser elegível para o grupo de $p_a$ e $m_x$ para o grupo de $p_b$. As duas substituições formam um único movimento: a solução candidata é avaliada após ambas, sem exigir que a solução intermediária seja aceita. O uso de $m_x$ permanece constante, o de $m_y$ diminui um caminhão e o de $m_z$ aumenta um caminhão. A variação de custo é $\Delta f_1 = 2000(c_z - c_y)$.
+Os três minérios são distintos; $m_z$ deve ser permitido em $p_a$ e $m_x$ em $p_b$. As duas alterações são realizadas e avaliadas juntas. Não se avalia nem se aceita um estado intermediário contendo apenas a primeira alteração. O uso de $m_x$ permanece constante, o de $m_y$ diminui um caminhão e o de $m_z$ aumenta um caminhão. Por isso, a variação de custo depende somente do minério que entra e daquele que sai: $\Delta f_1 = 2000(c_z-c_y)$.
 
 Os movimentos locais são definidos sobre minérios distintos, e não sobre posições equivalentes contendo o mesmo minério. Isso remove vizinhos duplicados sem alterar o conjunto de soluções alcançáveis.
 
 \subsection{VND e amostragem}
 
-A busca local usa primeira melhoria (D014): examina os movimentos em ordem aleatória, aceita o primeiro que melhora a solução segundo a regra de viabilidade e repete a busca na mesma vizinhança. Quando uma passada não encontra melhoria, a VND passa à próxima vizinhança, na ordem $N_1 \to N_2 \to N_3$; se a busca em uma vizinhança melhorou a solução, a VND retorna a $N_1$. $N_1$ é enumerada integralmente. Em $N_2$ e $N_3$, cada passada usa uma amostra uniforme de até 250 movimentos distintos, sem reposição; se houver menos movimentos, todos são incluídos na lista em ordem aleatória.
+A busca local usa primeira melhoria (D014): examina alterações em ordem aleatória e aceita a primeira que melhora a solução segundo a regra de viabilidade. Depois da aceitação, recomeça na mesma vizinhança. Se uma passagem completa não encontra melhoria, a VND segue a ordem $N_1 \to N_2 \to N_3$. Sempre que alguma vizinhança melhora a solução, a sequência volta a $N_1$.
 
-Em $N_3$, um \emph{prefixo} é a parte fixa $(p_a,p_b,m_x,m_y)$ do movimento: somente $m_z$ falta ser escolhido. Por exemplo, suponha o prefixo $(P1,P3,M2,M8)$ e os candidatos $m_z \in \{M4,M7,M10,M12\}$. Ele representa quatro movimentos, como $(P1,P3,M2,M8,M4)$: neste caso, $M2$ é substituído por $M4$ em $P1$, e $M8$ por $M2$ em $P3$. Cada um dos outros três valores de $m_z$ completa um movimento diferente. O peso desse prefixo é 4, isto é, o número de candidatos a $m_z$. O exemplo ilustra a composição do movimento; a viabilidade completa da solução ainda é verificada na avaliação.
+Em $N_1$, todas as alterações possíveis são examinadas. Em $N_2$ e $N_3$ existem alterações demais para testar todas a cada passagem; por isso, sorteiam-se no máximo 250 movimentos diferentes. ``Sem reposição'' significa que um movimento já selecionado não pode aparecer novamente na mesma passagem. Se houver menos de 250 movimentos, todos são examinados. A ordem aleatória é controlada pela \emph{seed}, um número que fixa os sorteios e permite repetir exatamente uma execução.
 
-Para sortear um movimento, o algoritmo escolhe um prefixo com probabilidade proporcional ao seu peso e, depois, sorteia uniformemente um dos seus candidatos a $m_z$. Se um prefixo tem $n$ candidatos e o total de movimentos possíveis é $T$, a probabilidade de cada movimento desse prefixo é $(n/T)(1/n)=1/T$. Assim, todos os movimentos completos têm a mesma chance em cada sorteio. Se um movimento já escolhido for sorteado novamente, ele é descartado e outro é sorteado, até completar a amostra de movimentos distintos. Esse agrupamento evita listar todos os movimentos completos no caso amostrado, embora armazene os prefixos e seus candidatos.
+Em $N_3$, os movimentos são organizados em grupos para evitar a construção antecipada de uma lista com cerca de 100 mil possibilidades. Um grupo fixa $(p_a,p_b,m_x,m_y)$ e reúne todas as escolhas permitidas para o minério novo $m_z$. Por exemplo, se o grupo $(P1,P3,M2,M8)$ permite $m_z\in\{M4,M7,M10,M12\}$, ele contém quatro movimentos completos. Em um deles, $(P1,P3,M2,M8,M4)$, M2 é substituído por M4 em P1 e M8 é substituído por M2 em P3. A solução resultante ainda passa pela avaliação completa das restrições.
+
+O sorteio pode ser entendido como uma urna com um bilhete para cada movimento completo. Para simular essa urna sem listar todos os bilhetes, primeiro se escolhe um grupo com chance proporcional ao número de movimentos que ele contém; depois se escolhe, com chances iguais, um movimento dentro do grupo. Portanto, um grupo com quatro movimentos tem quatro vezes a chance de um grupo com apenas um, mas cada movimento individual continua com a mesma probabilidade. Formalmente, se o grupo contém $n$ movimentos e existem $T$ no total, a probabilidade de um movimento específico é
+\begin{equation}
+\frac{n}{T}\times\frac{1}{n}=\frac{1}{T}.
+\end{equation}
+Se um movimento já selecionado voltar a ser sorteado, ele é descartado e o sorteio continua. Desse modo, a amostra tem até 250 movimentos distintos e não favorece grupos maiores nem minérios que aparecem em mais posições.
 
 Uma passagem sem melhoria em $N_1$ caracteriza ótimo local de $N_1$. Em $N_2$ e $N_3$, como há amostragem, significa apenas que a amostra daquela passagem não encontrou melhoria.
 
 \subsection{Perturbação SHAKE}
 
-A VND intensifica a busca por melhorias na região da solução atual. O SHAKE promove diversificação: altera a solução para tentar explorar outra região, antes de executar uma nova VND (D015). Ele utiliza estruturas próprias com intensidade crescente:
+A VND tenta melhorar a solução por pequenas alterações próximas. Quando ela para de melhorar, o SHAKE dá uma ``sacudida'' proposital na composição para que a busca recomece em outra região (D015). Ele utiliza perturbações de intensidade crescente:
 \begin{itemize}
     \item $P_1$: substituição aleatória de 3 posições por minérios elegíveis;
-    \item $P_2$: cadeia de ejeção envolvendo 4 pilhas distintas;
+    \item $P_2$: alteração encadeada envolvendo 4 pilhas distintas: cada pilha recebe o minério retirado da anterior;
     \item $P_3$: permutação cíclica de uma posição em cada uma das 5 pilhas de um mesmo grupo de sinter.
 \end{itemize}
 $P_1$ e $P_2$ podem alterar a disponibilidade global; $P_3$ preserva o consumo global, pois apenas redistribui minérios dentro de um grupo que compartilha a mesma elegibilidade. Se a perturbação de nível $k$ seguida de VND melhora a solução corrente, $k$ volta a 1; caso contrário, avança até 3.
@@ -381,15 +390,15 @@ Mesmo nas execuções dedicadas a $f_2$ e $f_3$, os alvos não foram atingidos e
 
 As estatísticas internas permitem interpretar a função de cada operador. Em média, nas cinco execuções de $f_1$, $N_1$ produziu 775,2 melhorias locais, $N_2$ produziu zero e $N_3$ 1,6. O zero de $N_2$ é esperado, pois a troca preserva a quantidade global de cada minério e, consequentemente, o custo. Para $f_2$, as médias foram 256,0 melhorias $N_1$, 752,0 $N_2$ e 0,2 $N_3$; para $f_3$, 315,6 $N_1$, 995,4 $N_2$ e nenhuma $N_3$. Assim, $N_2$ é especialmente relevante para redistribuir qualidade entre pilhas sem alterar o uso global.
 
-O baixo número de melhorias diretas de $N_3$ não implica inutilidade: ela amplia a topologia da busca local por um movimento coordenado que altera distribuição e composição global em um único passo. Além disso, a diversificação principal é realizada pelas estruturas $P_1$--$P_3$, separadas das vizinhanças locais. Em média, os níveis $P_1/P_2/P_3$ foram acionados 19,2/14,0/10,0 vezes em $f_1$, 12,2/9,6/7,8 em $f_2$ e 9,8/7,0/6,2 em $f_3$, mostrando que a busca alcançou repetidamente os níveis mais fortes quando perturbações menores não foram suficientes.
+O baixo número de melhorias diretas de $N_3$ não implica inutilidade. Essa vizinhança oferece um tipo de alteração que $N_1$ e $N_2$ não conseguem fazer sozinhas: redistribuir um minério e, ao mesmo tempo, trocar outro minério da composição global. Além disso, a tarefa principal de sair de uma região sem melhoria cabe às perturbações $P_1$--$P_3$. Em média, os níveis $P_1/P_2/P_3$ foram acionados 19,2/14,0/10,0 vezes em $f_1$, 12,2/9,6/7,8 em $f_2$ e 9,8/7,0/6,2 em $f_3$. Isso mostra que a busca precisou chegar várias vezes às perturbações mais fortes quando as menores não foram suficientes.
 
 \section{Formulações multiobjetivo e normalização}
 
-O conjunto de soluções admissíveis $\mathcal{X}$ é definido pelas restrições de massa, elegibilidade, disponibilidade global e qualidade da Seção de formulação. Para combinar objetivos de unidades distintas, utilizam-se as três melhores soluções factíveis das execuções mono-objetivo, uma por função, como âncoras (D018). Para cada objetivo $j$, seja $z_j^*$ o menor valor observado nas três âncoras e $z_j^{ref}$ o maior valor nessas mesmas soluções. A transformação, com referências fixas, é
+O conjunto de soluções admissíveis $\mathcal{X}$ é definido pelas restrições de massa, elegibilidade, disponibilidade global e qualidade da Seção de formulação. Custo, desvio de sílica e desvio de alumina possuem unidades e amplitudes diferentes; por isso, não devem ser somados diretamente. Para colocá-los em escalas comparáveis, usam-se como referências as três melhores soluções factíveis das execuções mono-objetivo, uma por função (D018). Para cada objetivo $j$, $z_j^*$ é o menor valor observado nessas três referências e $z_j^{ref}$ é o maior. A transformação é
 \begin{equation}
 \hat f_j(X) = \frac{f_j(X)-z_j^*}{z_j^{ref}-z_j^*}.
 \end{equation}
-Na ordem custo, sílica e alumina, os vetores utilizados são $z^*=(59.700.000; 2{,}37302543; 1{,}42076221)$ e $z^{ref}=(65.820.000; 6{,}49771170; 6{,}53750738)$, em que o custo está em reais. A execução usa a precisão original armazenada em \texttt{data/referencias\_multiobjetivo.json}; os números acima estão arredondados. Esses pontos são referências empíricas, não certificados de ideal ou nadir globais. Não se aplica truncamento: valores normalizados podem ficar abaixo de zero ou acima de um.
+Na ordem custo, sílica e alumina, os vetores utilizados são $z^*=(59.700.000; 2{,}37302543; 1{,}42076221)$ e $z^{ref}=(65.820.000; 6{,}49771170; 6{,}53750738)$, em que o custo está em reais. A execução usa a precisão original armazenada em \texttt{data/referencias\_multiobjetivo.json}; os números acima estão arredondados. São apenas os melhores e piores valores observados nesse conjunto de referência, não provas dos melhores e piores valores possíveis no problema. Como não há corte artificial da escala, uma nova solução pode receber valor normalizado menor que zero ou maior que um.
 
 Na Soma Ponderada (D019), cada vetor fixo $w$ define
 \begin{equation}
@@ -408,7 +417,7 @@ A GVNS é reutilizada nas duas abordagens. No problema $\varepsilon$-restrito, a
 
 \section{Experimentos multiobjetivo}
 
-O planejamento foi congelado após um piloto com seeds 4001 e 4002 (D021). A Soma Ponderada usa os 15 vetores da malha $w_j=k_j/4$, com $k_j$ inteiros não negativos e $\sum k_j=4$, acrescidos de $(1/3,1/3,1/3)$. A malha inclui extremos, combinações intermediárias e prioridades iguais. Para $\varepsilon$-restrito, o produto cartesiano de $\varepsilon_2,\varepsilon_3\in\{0{,}25;0{,}50;0{,}75;1{,}00\}$ produz 16 pares em níveis progressivamente mais restritivos. Essas escolhas são do grupo, não quantidades impostas pelo enunciado.
+O planejamento foi congelado após um piloto com as seeds 4001 e 4002 (D021). A Soma Ponderada usa 15 combinações de pesos em quartos, descritas por $w_j=k_j/4$, com $k_j$ inteiros não negativos e $\sum k_j=4$, além da combinação de pesos iguais $(1/3,1/3,1/3)$. Assim, a grade inclui casos que priorizam um único objetivo, combinações intermediárias e prioridades iguais. No $\varepsilon$-restrito, cada um dos quatro limites de sílica é combinado com cada um dos quatro limites de alumina, ambos em $\{0{,}25;0{,}50;0{,}75;1{,}00\}$, produzindo $4\times4=16$ pares. Essas quantidades são escolhas do grupo, não exigências do enunciado.
 
 Cada uma das 32 configurações usou as seeds 2021--2025, 200.000 avaliações, amostra 250 e SHAKE 3/4/5: são 160 execuções e 32 milhões de avaliações. Os parâmetros iguais controlam o esforço, mas não o tempo de parede. No piloto, 27 das 32 execuções de cada abordagem melhoraram seu objetivo escalar entre 100.000 e 200.000 avaliações (D021). A rodada oficial está em \texttt{results/multi\_final}, com código \texttt{d5e0d94}.
 
@@ -444,6 +453,115 @@ As cinco seeds contribuem para cada frente estimada. Na ordem 2021--2025, suas c
 
 Como medida complementar, calculou-se o desvio-padrão amostral entre as cinco seeds dentro de cada configuração, seguido da mediana desses 16 desvios-padrão por método. Para custo, obtiveram-se R\$ 44,5 mil na Soma Ponderada e R\$ 91,0 mil no $\varepsilon$-restrito; para $f_2$, 0,0188 e 0,0204; para $f_3$, 0,1025 e 0,0261, respectivamente. A dispersão depende da configuração e os métodos percorrem regiões diferentes; essas medianas não devem ser interpretadas como teste estatístico ou classificação geral de estabilidade. Os valores por configuração estão em \texttt{results/multi\_final/stats\_by\_configuration.csv}; as projeções, na Fig.~\ref{fig:multi_projecoes}.
 
+\section{Tomada de decisão multicritério}
+
+\subsection{Alternativas e critérios}
+
+As alternativas são todas as composições associadas aos vetores conjuntamente não dominados das duas abordagens multiobjetivo. A frente referencia 95 execuções; composições idênticas por pilha foram unificadas, preservando-se os identificadores de origem, o que resultou em 91 alternativas distintas. Todas foram reavaliadas pelo núcleo comum antes da decisão, confirmando seus três objetivos e sua factibilidade.
+
+Os critérios de decisão, todos minimizados, são custo $f_1$, desvios químicos $f_2$ e $f_3$ e heterogeneidade das receitas $H$. Para cada pilha $p$, seja $r_p$ o vetor de proporções de massa dos minérios. Como todos os caminhões carregam 2 kt, essas proporções coincidem com as proporções de posições de caminhão. Se $\bar r_g$ é a receita média das pilhas que alimentam o equipamento $g$, define-se
+\begin{equation}
+H(X)=\frac{1}{|P|}\sum_g\sum_{p\in P_g}\left\|r_p-\bar r_g\right\|_2^2.
+\end{equation}
+O valor é zero quando todas as pilhas de cada equipamento possuem a mesma receita proporcional. Cada pilha recebe o mesmo peso, pois o atributo representa complexidade operacional, e não tonelagem produzida. Na amostra oficial, as correlações de Pearson de $H$ com $f_1$, $f_2$ e $f_3$ foram 0,305, -0,237 e -0,209: o quarto atributo acrescenta informação diferente e introduz compromissos nos dois sentidos.
+
+Para a decisão, cada critério $c$ é normalizado no conjunto fixo de alternativas:
+\begin{equation}
+g_c(a)=\frac{c(a)-\min_b c(b)}{\max_b c(b)-\min_b c(b)}.
+\end{equation}
+Assim, zero é o melhor valor observado e um o pior. A escala deve ser recalculada se novas alternativas forem incluídas; ela não é a mesma normalização usada nas escalarizações da Entrega 2.
+
+\subsection{PROMETHEE II}
+
+O PROMETHEE II compara cada alternativa com todas as demais e produz uma lista completa, da mais para a menos recomendada \cite{promethee_ref}. Em cada critério, uma pequena diferença pode ser tratada como empate prático; diferenças maiores geram preferência crescente até atingir preferência total. Para critérios de minimização, a vantagem de $a$ sobre $b$ é $\Delta_c(a,b)=g_c(b)-g_c(a)$. Utilizou-se a função de preferência linear com indiferença:
+\begin{equation}
+P_c(a,b)=
+\begin{cases}
+0, & \Delta_c\le q_c,\\
+(\Delta_c-q_c)/(p_c-q_c), & q_c<\Delta_c<p_c,\\
+1, & \Delta_c\ge p_c.
+\end{cases}
+\end{equation}
+A preferência agregada é $\pi(a,b)=\sum_c w_cP_c(a,b)/\sum_c w_c$. Em linguagem direta, o fluxo positivo resume o quanto uma alternativa supera as demais, e o fluxo negativo resume o quanto ela é superada. A diferença $\phi(a)=\phi^+(a)-\phi^-(a)$ é o saldo usado para ordenar as alternativas: quanto maior, melhor a posição.
+
+\subsection{ELECTRE III e incomparabilidade}
+
+O ELECTRE III complementa essa lista ao admitir que duas alternativas podem não ser comparáveis: uma pode ser melhor em certos critérios e claramente pior em outro, sem evidência suficiente para escolher entre elas \cite{electre_ref}. Para cada par $(a,b)$, o método verifica quanto os critérios apoiam a afirmação ``$a$ é pelo menos tão boa quanto $b$''. Uma pequena desvantagem, até o limite $q_c$, é tratada como indiferença; entre $q_c$ e $p_c$, o apoio diminui gradualmente; acima de $p_c$, aquele critério deixa de apoiar a afirmação. A concordância global reúne esses apoios de acordo com os pesos.
+
+Uma desvantagem muito grande em um critério pode funcionar como veto, mesmo quando os demais critérios favorecem a alternativa. A credibilidade $\sigma(a,b)$ resume o apoio final à afirmação de que $a$ é pelo menos tão boa quanto $b$, após considerar esses vetos. Na análise, considera-se que $a$ supera claramente $b$ quando $\sigma(a,b)\ge0{,}65$ e o sentido contrário não atinge esse corte. Uma alternativa é chamada máxima quando nenhuma outra a supera claramente. Se nenhum sentido possui evidência suficiente, o par permanece incomparável; a ordenação exibida na tabela não elimina essa informação.
+
+\subsection{Preferências e protocolo de sensibilidade}
+
+O cenário-base usa $w_c=0{,}25$ para os quatro critérios. Pesos iguais são uma decisão do grupo diante da ausência de preferências fornecidas por operador ou docente, e não uma consequência da otimização. Nas escalas normalizadas adotaram-se $q=0{,}05$, $p=0{,}20$ e veto $v=0{,}60$, interpretados como 5\%, 20\% e 60\% da amplitude observada; o corte ELECTRE é 0,65.
+
+A sensibilidade combina cinco perfis de peso com três escalas de limiares. Além dos pesos iguais, cada critério recebe, uma vez, peso 0,40, enquanto os demais recebem 0,20. Em cada perfil, $q$, $p$ e $v$ são multiplicados por 0,8, 1,0 e 1,2, totalizando 15 cenários por método. Se o ELECTRE deixar várias alternativas máximas, aplica-se a regra adicional exigida pelo enunciado: maior fluxo líquido PROMETHEE entre as máximas; persistindo empate, menor distância de Chebyshev normalizada ao ideal; por fim, identificador apenas para determinismo técnico.
+
+\section{Resultados da decisão multicritério}
+
+No cenário-base, o PROMETHEE II classificou A073 em primeiro lugar. O ELECTRE III encontrou nove alternativas máximas e 1.695 pares incomparáveis entre os 4.095 pares possíveis. A073 pertence ao conjunto máximo e também foi escolhida pela regra adicional, produzindo consenso entre os métodos. A Tabela~\ref{tab:ranking_decisao} apresenta as cinco primeiras alternativas PROMETHEE e sua posição de exibição no ELECTRE; a tabela completa dos critérios está no Apêndice~\ref{sec:apendice_alternativas}.
+
+\begin{table}[H]
+\centering
+\caption{Primeiras alternativas do PROMETHEE II e posição no ELECTRE III. Custo em milhões de reais; todas pertencem ao conjunto máximo ELECTRE.}
+\label{tab:ranking_decisao}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Alt.} & \textbf{Custo} & $\boldsymbol{f_2}$ & $\boldsymbol{f_3}$ & $\boldsymbol{H}$ & \textbf{Rank PROM.} & \textbf{Pos. ELECTRE} \\
+\midrule
+\textbf{A073} & \textbf{63,74} & \textbf{3,3973} & \textbf{2,6966} & \textbf{0,042526} & \textbf{1} & \textbf{3} \\
+A045 & 62,44 & 3,3942 & 3,9434 & 0,042654 & 2 & 1 \\
+A072 & 63,70 & 3,3923 & 2,6999 & 0,046872 & 3 & 4 \\
+A076 & 63,74 & 3,4001 & 2,6798 & 0,049309 & 4 & 8 \\
+A035 & 62,18 & 3,4033 & 4,2147 & 0,049592 & 5 & 2 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+A073 custa R\$ 63,74 milhões, com $f_2=3{,}397325$, $f_3=2{,}696618$ e $H=0{,}042526$. Comparada aos melhores valores isolados entre as 91 alternativas, seu custo é 6,80\% maior, $f_2$ é 43,18\% maior, $f_3$ é 89,71\% maior e $H$ apenas 0,81\% maior. Essas porcentagens não são somadas pelo método; elas esclarecem o compromisso. A alternativa evita os extremos químicos e fica praticamente no melhor nível observado de padronização das receitas. Em contraste, A045 custa R\$ 1,30 milhão a menos e tem $f_2$ semelhante, mas $f_3=3{,}9434$; A072 tem química quase idêntica a A073, porém heterogeneidade maior. Esse equilíbrio explica o maior fluxo líquido de A073.
+
+\begin{table}[H]
+\centering
+\caption{Escolhas nos 15 cenários de sensibilidade. Cada linha reúne os três fatores de limiar.}
+\label{tab:sensibilidade_decisao}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcc}
+\toprule
+\textbf{Perfil de pesos} & \textbf{PROMETHEE II} & \textbf{ELECTRE III} \\
+\midrule
+Iguais & A073 / A073 / A073 & A073 / A073 / A073 \\
+Prioridade custo & A020 / A020 / A020 & A020 / A020 / A020 \\
+Prioridade $f_2$ & A073 / A073 / A073 & A073 / A045 / A066 \\
+Prioridade $f_3$ & A073 / A073 / A073 & A073 / A073 / A073 \\
+Prioridade $H$ & A073 / A073 / A073 & A073 / A073 / A073 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+A073 venceu 12 dos 15 cenários PROMETHEE e foi a escolha ELECTRE em 10. A principal mudança ocorre quando custo recebe peso 0,40: ambos selecionam A020, de R\$ 60,62 milhões, mas com $f_2=5{,}4577$ e $f_3=5{,}4866$. Sob prioridade a $f_2$, o PROMETHEE mantém A073, enquanto o conjunto máximo ELECTRE e o desempate respondem aos limiares, escolhendo A073, A045 ou A066. Portanto, a recomendação é majoritariamente estável, mas não independente das preferências; uma unidade de decisão que privilegie fortemente custo deve deliberar entre A073 e A020.
+
+\begin{figure*}[tp]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}\includegraphics[width=\textwidth]{../results/decision_final/selected_f1_f2.png}\caption{$f_1$ e $f_2$.}\end{subfigure}\hfill
+\begin{subfigure}[b]{0.32\textwidth}\includegraphics[width=\textwidth]{../results/decision_final/selected_f1_f3.png}\caption{$f_1$ e $f_3$.}\end{subfigure}\hfill
+\begin{subfigure}[b]{0.32\textwidth}\includegraphics[width=\textwidth]{../results/decision_final/selected_f2_f3.png}\caption{$f_2$ e $f_3$.}\end{subfigure}
+\caption{Projeções das 91 alternativas com as escolhas dos dois métodos. Os marcadores coincidem em A073 no cenário-base.}
+\label{fig:escolhas_multicriterio}
+\end{figure*}
+
+\begin{figure*}[tp]
+\centering
+\includegraphics[width=0.86\textwidth]{../results/decision_final/final_solution.png}
+\caption{Composição e qualidade da alternativa final A073. A solução é factível em todas as restrições originais.}
+\label{fig:solucao_final_decisao}
+\end{figure*}
+
+\section{Aplicação interativa}
+
+A aplicação Streamlit integra os artefatos oficiais sem recalcular fórmulas em uma camada paralela. Ela apresenta um resumo da solução recomendada, permite escolher qualquer projeção bidimensional, filtrar e comparar alternativas, consultar os rankings PROMETHEE e ELECTRE, explorar os 15 cenários de sensibilidade e inspecionar custo, qualidade e composição das pilhas. Quando uma composição é exibida, a aplicação constrói um objeto de solução e chama o mesmo avaliador e a mesma rotina de visualização usados nos experimentos. Os dados de decisão permanecem nos CSV e JSON reproduzíveis, de modo que a interface não é a fonte primária dos resultados.
+
 \section{Reprodutibilidade}
 
 A execução final mono-objetivo pode ser reproduzida em uma pasta nova, sem sobrescrever a rodada histórica:
@@ -461,9 +579,20 @@ Os arquivos JSON registram código, instância, parâmetros, seed, resultados, v
 
 Entrega 2: protocolo em \texttt{docs/entrega2\_experimentos.md} e instância em \texttt{data/example\_instance}. As assinaturas históricas dependem do caminho absoluto; as atuais usam o conteúdo da instância e do código. Novas rodadas devem usar outra pasta; os registros antigos não são migrados.
 
+Entrega 3: o protocolo está em \texttt{data/protocolo\_entrega3.json}. A análise completa e a tabela do apêndice são regeneradas por:
+\begin{minipage}{\columnwidth}
+\begin{lstlisting}[language=bash]
+python scripts/run_decision_analysis.py
+streamlit run app/app.py
+\end{lstlisting}
+\end{minipage}
+O diretório \texttt{results/decision\_final} contém alternativas, rankings, sensibilidade, figuras e a composição recomendada.
+
 \section{Conclusões}
 
-A GVNS preserva massa e elegibilidade por representação e operadores, tratando disponibilidade e qualidade pela regra de viabilidade. A calibração consolidou amostra 250, SHAKE 3/4/5 e 200.000 avaliações; as 15 execuções mono-objetivo foram factíveis. Na etapa multiobjetivo, ambas as abordagens produziram soluções factíveis em todas as configurações e seeds. As frentes aproximadas evidenciam compromissos entre custo e qualidade e cobertura condicionada às grades escolhidas. A escolha entre alternativas permanece para a Entrega 3.
+A GVNS preserva massa e elegibilidade por representação e operadores, tratando disponibilidade e qualidade pela regra de viabilidade. A calibração consolidou amostra 250, SHAKE 3/4/5 e 200.000 avaliações; as 15 execuções mono-objetivo foram factíveis. Na etapa multiobjetivo, as 160 execuções oficiais produziram 91 composições conjuntamente não dominadas distintas, revelando compromissos entre custo e qualidade e cobertura condicionada às grades escolhidas.
+
+Na decisão multicritério, PROMETHEE II e ELECTRE III incorporaram também a regularidade operacional das receitas. Com pesos iguais, os dois procedimentos convergiram para A073 após o tratamento explícito da incomparabilidade. A sensibilidade sustentou essa alternativa na maioria dos cenários, mas mostrou que prioridade forte ao custo favorece A020. Assim, recomenda-se A073 como compromisso-base, sem apresentá-la como escolha universal ou ótimo global. O protocolo, os rankings, a composição e a aplicação Streamlit tornam essa recomendação auditável e permitem revisar preferências sem repetir a otimização.
 
 \begin{figure*}[tp]
 \centering
@@ -479,6 +608,16 @@ A GVNS preserva massa e elegibilidade por representação e operadores, tratando
 \label{fig:multi_projecoes}
 \end{figure*}
 
+\clearpage
+\onecolumn
+\appendix
+\section{Valores de todas as alternativas}
+\label{sec:apendice_alternativas}
+
+A Tabela~\ref{tab:todas_alternativas} registra os quatro critérios originais usados na decisão. Os rankings completos e os valores normalizados permanecem nos arquivos reproduzíveis da análise.
+
+\input{../results/decision_final/alternatives_table.tex}
+
 {\small
 \begin{thebibliography}{9}
 
@@ -490,6 +629,12 @@ Universidade Federal de Minas Gerais. \textit{Material de aula de Teoria da Deci
 
 \bibitem{repo_projeto}
 Grupo do projeto. \textit{cassotis\_optimization}. Repositório GitHub com o código das execuções finais. 2026.
+
+\bibitem{promethee_ref}
+J.-P. Brans e P. Vincke. A Preference Ranking Organisation Method: The PROMETHEE Method for Multiple Criteria Decision-Making. \textit{Management Science}, 31(6):647--656, 1985.
+
+\bibitem{electre_ref}
+B. Roy. The Outranking Approach and the Foundations of ELECTRE Methods. \textit{Theory and Decision}, 31:49--73, 1991.
 
 \end{thebibliography}
 }

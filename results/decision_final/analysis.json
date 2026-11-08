@@ -1,0 +1,60 @@
+{
+  "protocol": "C:\\Users\\pedrooliveira\\Desktop\\TD\\cassotis_optimization\\data\\protocolo_entrega3.json",
+  "candidate_run_count": 95,
+  "unique_composition_count": 91,
+  "normalization": {
+    "f1": {
+      "minimum": 59680000.0,
+      "maximum": 65820000.0
+    },
+    "f2": {
+      "minimum": 2.372751837832068,
+      "maximum": 6.93955413604966
+    },
+    "f3": {
+      "minimum": 1.4214579679821786,
+      "maximum": 6.634567656013078
+    },
+    "heterogeneity": {
+      "minimum": 0.04218545771969555,
+      "maximum": 0.1227516127802748
+    }
+  },
+  "baseline": {
+    "promethee_choice": "A073",
+    "electre_maximal": [
+      "A035",
+      "A045",
+      "A069",
+      "A072",
+      "A073",
+      "A076",
+      "A082",
+      "A084",
+      "A087"
+    ],
+    "electre_choice_after_tie_break": "A073",
+    "electre_incomparable_pairs": 1695,
+    "consensus": true,
+    "final_recommendation": "A073",
+    "final_criteria": {
+      "f1": 63740000.0,
+      "f2": 3.3973246237340806,
+      "f3": 2.696618363083936,
+      "heterogeneity": 0.04252605969833365
+    }
+  },
+  "sensitivity": {
+    "scenario_count": 15,
+    "promethee_winner_frequency": {
+      "A073": 12,
+      "A020": 3
+    },
+    "electre_choice_frequency": {
+      "A073": 10,
+      "A020": 3,
+      "A045": 1,
+      "A066": 1
+    }
+  }
+}

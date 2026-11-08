@@ -708,3 +708,98 @@ results/multi_smoke100k e results/multi_smoke200k.
 
 **Atualização de reprodutibilidade:** os arquivos históricos assinavam o caminho absoluto da instância e não podem ser retomados automaticamente em outro diretório. Para novas execuções, a assinatura versão 2 utiliza o conteúdo normalizado dos três CSVs da instância, do executor e do núcleo Python, além da configuração, referências e protocolo. Alternativas consideradas: manter o caminho absoluto; aceitar registros legados sem identificar seu conteúdo; ou migrar os registros históricos. A assinatura por conteúdo permite retomar em outro diretório e detecta alterações relevantes, sem confiar silenciosamente em registros antigos. Como consequência, os resultados legados são preservados e devem ser consultados como históricos; novas rodadas usam uma pasta de saída distinta. A assinatura não fixa a versão do Python nem das dependências. A rodada oficial não foi refeita por essa alteração.
 
+---
+
+## D023 — Métodos de apoio multicritério da Entrega 3
+
+**Status:** CONSOLIDADA
+
+**Requisito do enunciado:** aplicar dois métodos entre AHP, ELECTRE e PROMETHEE para selecionar a ação final.
+
+**Decisão do grupo:** utilizar **PROMETHEE II** e **ELECTRE III**.
+
+**Alternativas consideradas:** AHP + PROMETHEE, AHP + ELECTRE e PROMETHEE + ELECTRE.
+
+**Motivação:** o conjunto oficial contém dezenas de alternativas. O AHP aplicado diretamente às alternativas exigiria uma quantidade impraticável de comparações par a par e seria especialmente sujeito a inconsistências. O PROMETHEE II fornece uma ordenação completa e fácil de interpretar por fluxos positivo, negativo e líquido. O ELECTRE III complementa essa visão com limiares de indiferença, preferência e veto, preservando incomparabilidades em vez de forçar sempre uma ordem total.
+
+**Consequências:**
+
+- todos os critérios são tratados como minimização;
+- o ranking completo do PROMETHEE II não deve ser confundido com prova de dominância;
+- no ELECTRE III, a matriz de credibilidade é explorada com corte 0,65;
+- uma alternativa é máxima quando nenhuma outra a sobreclassifica estritamente;
+- o ranking por credibilidade líquida é exibido como apoio, mas não elimina o conjunto máximo nem as incomparabilidades;
+- o AHP não é apresentado como método aplicado nesta entrega.
+
+**Implementação:** `src/cassotis_optimization/decision/promethee.py` e `src/cassotis_optimization/decision/electre.py`.
+
+**Validação:** testes unitários cobrem dominância clara, indiferença e incomparabilidade por vetos opostos.
+
+---
+
+## D024 — Alternativas e quarto critério da Entrega 3
+
+**Status:** CONSOLIDADA
+
+**Requisito do enunciado:** avaliar pelo menos quatro atributos, incluindo \(f_1\), \(f_2\), \(f_3\) e um atributo adicional conflitante e não usado na otimização. O enunciado sugere homogeneidade das receitas das pilhas de um mesmo equipamento.
+
+**Decisão do grupo:**
+
+1. O conjunto de alternativas é formado pelas composições associadas aos vetores conjuntamente não dominados da Entrega 2, reunindo as duas abordagens escalares.
+2. Execuções com a mesma composição por pilha são unificadas, preservando seus identificadores de origem.
+3. O quarto critério é a **heterogeneidade das receitas**, minimizada e definida por
+
+\[
+H(X)=\frac{1}{|P|}\sum_{g}\sum_{p\in P_g}
+\left\|r_p-\bar r_g\right\|_2^2,
+\]
+
+onde \(r_p\) é o vetor de proporções de massa dos minérios na pilha \(p\) e \(\bar r_g\) é a receita média, com o mesmo peso para cada pilha, do equipamento \(g\). Como todos os caminhões têm 2 kt, a proporção de caminhões coincide com a proporção de massa.
+
+**Alternativas consideradas para o critério:** número de minérios distintos por pilha; distância máxima entre pares de pilhas; desvio absoluto em torno da receita média; média das distâncias quadráticas.
+
+**Motivação:** a distância quadrática média mede diretamente a variação das receitas completas, é zero quando todas as pilhas do equipamento têm a mesma composição proporcional, penaliza divergências acentuadas e não reutiliza custo ou qualidade química. Dar o mesmo peso a cada pilha representa a complexidade operacional de manter uma receita, em vez de fazer pilhas maiores dominarem a medida.
+
+**Consequências:**
+
+- o atributo não altera nem retroage sobre a otimização da Entrega 2;
+- sua escala depende do conjunto de minérios, razão pela qual ele é normalizado antes dos métodos de decisão;
+- o critério mede proporções, não igualdade de massa total das pilhas;
+- as 95 execuções referenciadas pela frente conjunta resultaram em 91 composições distintas;
+- na amostra oficial, a correlação de Pearson de \(H\) com \(f_1,f_2,f_3\) foi, respectivamente, 0,305, -0,237 e -0,209, confirmando que ele acrescenta informação diferente e compromissos nos dois sentidos.
+
+**Implementação:** `src/cassotis_optimization/decision/criteria.py` e carregamento auditado em `scripts/run_decision_analysis.py`.
+
+---
+
+## D025 — Preferências, sensibilidade e decisão final multicritério
+
+**Status:** CONSOLIDADA
+
+**Decisão do grupo:**
+
+- normalizar cada um dos quatro critérios por min-max no conjunto fixo de alternativas, com zero como melhor e um como pior valor observado;
+- usar pesos iguais de 0,25 no cenário-base, pois não há preferência externa confirmada que justifique privilegiar um critério;
+- na escala normalizada, adotar limiar de indiferença \(q=0,05\), preferência estrita \(p=0,20\) e veto ELECTRE \(v=0,60\);
+- usar corte de credibilidade ELECTRE de 0,65;
+- analisar sensibilidade em cinco perfis de peso: pesos iguais e prioridade 0,40 para cada critério, um por vez, com 0,20 para cada um dos demais;
+- repetir os cinco perfis com fatores 0,8, 1,0 e 1,2 sobre \(q,p,v\), totalizando 15 cenários por método;
+- quando o ELECTRE produzir mais de uma alternativa máxima, escolher entre elas pelo maior fluxo líquido PROMETHEE; persistindo empate, usar a menor distância de Chebyshev normalizada ao ideal e, apenas para determinismo técnico, o identificador da alternativa.
+
+**Alternativas consideradas:** pesos inferidos da Soma Ponderada da Entrega 2; elicitação AHP apenas para pesos; limiares nulos; seleção direta pelo ranking de credibilidade líquida; escolha arbitrária entre incomparáveis.
+
+**Motivação:** pesos iguais são a hipótese de preferência menos forte disponível e são declarados como escolha do grupo, não como exigência do enunciado. Os limiares correspondem a 5%, 20% e 60% da amplitude observada de cada critério, tornando-os comparáveis entre unidades. A sensibilidade separa alterações de prioridade de alterações na percepção de indiferença, preferência e veto. O desempate preserva primeiro a relação de sobreclassificação e só então usa uma ordenação completa já definida.
+
+**Consequências:**
+
+- a normalização é válida para este conjunto fixo; novas alternativas exigem recalcular as escalas e repetir a análise;
+- a escolha final representa o cenário-base do grupo e não uma preferência fornecida pela professora ou por um operador real;
+- mudanças fortes de preferência podem alterar a recomendação e são reportadas, não ocultadas;
+- o grande número de incomparabilidades do ELECTRE é parte do resultado do método, não um erro a ser removido.
+
+**Evidência experimental:** no cenário-base, o PROMETHEE II selecionou A073. O ELECTRE III produziu nove alternativas máximas; após a regra adicional, também selecionou A073. Foram observados 1.695 pares incomparáveis. Em 15 cenários de sensibilidade, A073 venceu no PROMETHEE em 12 e foi a escolha ELECTRE em 10. A prioridade explícita ao custo levou ambos os métodos a A020 nos três fatores de limiar. O resultado demonstra estabilidade majoritária, mas não invariância a preferências.
+
+**Recomendação final:** A073, originada da execução `epsilon_restricted_e01_seed2021`, com custo R$ 63.740.000, \(f_2=3,397325\), \(f_3=2,696618\) e heterogeneidade 0,042526.
+
+**Protocolo e resultados:** `data/protocolo_entrega3.json` e `results/decision_final/`.
+

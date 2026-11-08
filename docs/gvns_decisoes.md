@@ -11,9 +11,8 @@ O registro formal de cada decisão, com status, alternativas e consequências,
 está em `docs/decision_log.md` (D007, D009, D010, D013–D017).
 
 Para cada ponto, é indicado o que **o enunciado exige** e o que **é escolha do
-grupo**. Os valores numéricos dos parâmetros ainda são **padrões
-experimentais**. Eles serão calibrados antes de congelar a configuração e gerar
-os resultados finais.
+grupo**. Os valores numéricos apresentados abaixo são os parâmetros
+**consolidados após a calibração** e usados nas execuções finais.
 
 ---
 
@@ -67,7 +66,7 @@ VND(X):
 BUSCA_LOCAL(X, N):                         # primeira melhoria
     repetir
         C ← N1: todos os movimentos, em ordem aleatória
-            N2, N3: até 500 movimentos distintos, sorteados sem reposição
+            N2, N3: até 250 movimentos distintos, sorteados sem reposição
         para cada movimento m em C:
             Y ← aplicar m em X;  avaliar Y   # conta 1 avaliação
             se Y é melhor que X:  X ← Y;  recomeçar
@@ -138,7 +137,7 @@ explicar e não tem parâmetros. A diversificação fica a cargo do SHAKE.
 - **N1 é explorada por completo** (cerca de 1.100 movimentos distintos na
   instância). Quando a busca em N1 termina, a solução é um ótimo local de N1.
 - **N2 (cerca de 3.000 movimentos) e N3 (cerca de 100.000) são amostradas.**
-  A cada passada, sorteiam-se até 500 movimentos distintos, com probabilidade
+  A cada passada, sorteiam-se até 250 movimentos distintos, com probabilidade
   igual para cada movimento distinto e sem repetição dentro da passada.
   Quando nenhum deles melhora, a busca naquela vizinhança termina. Isso
   **não garante** que a solução seja ótimo local de N2 ou N3: só quer dizer
@@ -163,8 +162,8 @@ explicar e não tem parâmetros. A diversificação fica a cargo do SHAKE.
     grupo é sorteado com peso igual ao número de m_z possíveis e depois m_z é
     sorteado. Assim, cada movimento distinto tem a mesma probabilidade, sem
     precisar enumerar os 10⁵ movimentos.
-- O **500** é um valor padrão experimental (`GVNSConfig.sample_size`), que
-  ainda será calibrado.
+- O valor **250** foi consolidado após a comparação experimental com amostras
+  de 500 e 1000 movimentos (D014).
 
 ## 6. Perturbação (SHAKE) → estruturas próprias P1, P2, P3
 
@@ -176,8 +175,8 @@ crescente:
 
 | k | Estrutura | O que faz | Tamanho |
 |---|---|---|---|
-| 1 | **P1 — pequena** | troca o minério de 2 posições sorteadas por outro minério elegível | até 2 caminhões |
-| 2 | **P2 — cadeia** | cadeia de ejeção em 3 pilhas: a 1ª recebe um minério novo, a 2ª recebe o que saiu da 1ª, a 3ª recebe o que saiu da 2ª, e o minério da 3ª sai da solução | até 3 caminhões em 3 pilhas |
+| 1 | **P1 — pequena** | troca o minério de 3 posições sorteadas por outro minério elegível | até 3 caminhões |
+| 2 | **P2 — cadeia** | alteração encadeada em 4 pilhas: a 1ª recebe um minério novo, cada pilha seguinte recebe o que saiu da anterior, e o minério da 4ª sai da solução | até 4 caminhões em 4 pilhas |
 | 3 | **P3 — forte** | permutação cíclica de uma posição de cada uma de 5 pilhas do mesmo grupo de sinter | até 5 caminhões em 5 pilhas |
 
 **Por quê:**
@@ -187,7 +186,7 @@ crescente:
   de N1/N2/N3) confundia a definição das vizinhanças locais com a intensidade
   da perturbação.
 - Quando a VND não consegue melhorar, o SHAKE passa progressivamente para
-  regiões mais distantes: P1 mexe em 2 caminhões, P2 em 3 pilhas encadeadas e
+  regiões mais distantes: P1 mexe em 3 caminhões, P2 em 4 pilhas encadeadas e
   P3 em 5 pilhas ao mesmo tempo.
 - **P3 fica dentro de um grupo** porque as pilhas de um mesmo sinter têm a
   mesma elegibilidade, então qualquer minério pode circular entre elas sem
@@ -200,8 +199,8 @@ crescente:
   enunciado. Diferente da busca local, aqui não se trata de explorar uma
   vizinhança, e sim de sortear caminhões ao acaso.
 
-Os tamanhos 2, 3 e 5 são padrões experimentais (`p1_positions`,
-`p2_chain_length`, `p3_piles` em `GVNSConfig`).
+Os tamanhos 3, 4 e 5 foram consolidados após a calibração (`p1_positions`,
+`p2_chain_length`, `p3_piles` em `GVNSConfig`; D015).
 
 ## 7. Critério de parada → número de avaliações
 
@@ -217,9 +216,8 @@ candidatas, igual para f1, f2 e f3.
   e curvas são comparáveis entre objetivos e entre computadores do grupo.
 - O eixo x das curvas de convergência fica igual ao critério de parada.
 
-O padrão atual é **200.000 avaliações** (`GVNSConfig.max_evaluations`,
-configurável com `--budget`). Esse valor **ainda não foi definido
-experimentalmente**. O tempo de execução é registrado como informação
+O valor consolidado é **200.000 avaliações** (`GVNSConfig.max_evaluations`,
+configurável com `--budget`). O tempo de execução é registrado como informação
 complementar.
 
 ## 8. Protocolo experimental
@@ -232,9 +230,9 @@ as 5 curvas sobrepostas e uma figura da melhor solução.
 1. **Calibração** dos parâmetros experimentais (orçamento, tamanho da amostra,
    P1/P2/P3) com um conjunto próprio de seeds.
 2. **Congelar** o algoritmo e os parâmetros.
-3. **Escolher e registrar as 5 seeds finais** em D017, antes de rodar. Elas
-   devem ser diferentes de todas as seeds já usadas no desenvolvimento, na
-   calibração e nos testes.
+3. **Registrar as 5 seeds finais** em D017 antes da rodada oficial. Foram
+   escolhidas 2016, 2017, 2018, 2019 e 2020, diferentes das seeds usadas no
+   desenvolvimento, na calibração e nos testes.
 4. **Executar** os três objetivos e gerar mínimo, desvio-padrão e máximo, as
    curvas e as figuras.
 5. **Adicionar os resultados num commit ou PR separado** da implementação.
@@ -267,14 +265,14 @@ Cada execução salva, em `results/mono/runs/*.json`:
 | Parâmetro | Valor padrão | Status | Registro |
 |---|---|---|---|
 | Critério de parada | nº de avaliações | consolidado | D010 |
-| Orçamento | 200.000 | experimental | D010 |
+| Orçamento | 200.000 | consolidado | D010 |
 | Ordem da VND | N1 → N2 → N3 | consolidado | D014 |
 | Busca local | primeira melhoria | consolidado | D014 |
 | Vizinhanças completas | N1 | consolidado | D014 |
-| Tamanho da amostra (N2, N3) | 500 | experimental | D014 |
+| Tamanho da amostra (N2, N3) | 250 | consolidado | D014 |
 | SHAKE | P1 → P2 → P3 (k_max = 3) | consolidado | D015 |
-| Posições em P1 | 2 | experimental | D015 |
-| Pilhas na cadeia P2 | 3 | experimental | D015 |
-| Pilhas na permutação P3 | 5 | experimental | D015 |
+| Posições em P1 | 3 | consolidado | D015 |
+| Pilhas na cadeia P2 | 4 | consolidado | D015 |
+| Pilhas na permutação P3 | 5 | consolidado | D015 |
 | Aceitação | melhoria estrita | consolidado | D016 |
-| Seeds finais | a definir | pendente | D017 |
+| Seeds finais | 2016--2020 | consolidado | D017 |
